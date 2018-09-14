@@ -1,37 +1,42 @@
 <template>
-  <div class="about">
-    <div class="selectors">
-      <select class="select" v-model="project">
-        <option v-for="option in projectOptions" :key="option.value" :value="option.value">
-          {{ option.text }}
-        </option>
-      </select>
-      <select class="select" v-model="selected">
-        <option v-for="option in options" :key="option.value" :value="option.value">
-          {{ option.text }}
-        </option>
-      </select>
-    </div>
+  <div class="view2">
 
-    <div class="">
-      <div class="chart">
-        <stacked-cascade class="cascade"
-          :h="400"
-          :yAxisTitle="'Number of people'"
-          :chartData="chartData"
-          :colourScheme="projectColour"
-          :keys="projectKeys"
-          :dict="projectDict" />
-      </div>
-
-      <div class="chart">
+    <div class="columns">
+      <div class="column chart">
+        <h2>2016</h2>
         <stacked-cascade class="cascade"
           :h="200"
           :yAxisTitle="'Number of people'"
-          :chartData="chartData"
+          :chartData="data2016"
           :colourScheme="['#3182bd']"
           :keys="['total']"
           :dict="{ total: 'Total' }" />
+
+        <stacked-cascade class="cascade"
+          :h="300"
+          :yAxisTitle="'Number of people'"
+          :chartData="data2016"
+          :colourScheme="colourScheme2"
+          :keys="keys"
+          :dict="dict" />
+      </div>
+
+      <div class="column chart">
+        <h2>2017</h2>
+        <stacked-cascade class="cascade"
+          :h="200"
+          :yAxisTitle="'Number of people'"
+          :chartData="data2017"
+          :colourScheme="['#3182bd']"
+          :keys="['total']"
+          :dict="{ total: 'Total' }" />
+        <stacked-cascade class="cascade"
+          :h="300"
+          :yAxisTitle="''"
+          :chartData="data2017"
+          :colourScheme="colourScheme2"
+          :keys="keys"
+          :dict="dict" />
       </div>
     </div>
   </div>
@@ -42,23 +47,20 @@ import * as d3 from 'd3'
 import StackedCascade from '@/components/StackedCascade.vue'
 
 export default {
-  name: 'app',
   components: {
     StackedCascade,
   },
   data() {
     return {
       project: 'hypertension',
-      projectOptions: [
-        { text: 'Hypertension', value: 'hypertension' },
-        { text: 'TB', value: 'tb' },
-      ],
       selected: '2016',
       options: [
         { text: '2016', value: '2016' },
         { text: '2017', value: '2017' },
       ],
       chartData: [],
+      data2016: [],
+      data2017: [],
       keys: [
         'ufemale',
         'umale',
@@ -90,26 +92,12 @@ export default {
     }
   },
   computed: {
-    projectKeys() {
-      return this.project === 'tb' ? this.tbKeys : this.keys
-    },
-    projectDict() {
-      return this.project === 'tb' ? this.tbDict : this.dict
-    },
-    projectColour() {
-      return this.project === 'tb' ? this.colourScheme2 : this.colourScheme
-    }
   },
   watch: {
-    selected(newSelected) {
-      this.fetchData(this.project, newSelected)
-    },
-    project(newSelected) {
-      this.fetchData(newSelected, this.selected)
-    }
   },
   mounted() {
-    this.fetchData(this.project, this.selected)
+    this.fetch2016Data(this.project)
+    this.fetch2017Data(this.project)
   },
   methods: {
     transformData(data) {
@@ -118,7 +106,7 @@ export default {
         let obj = { stage: d.stage }
         let total = 0;
 
-        this.projectKeys.forEach(key => {
+        this.keys.forEach(key => {
           total += d[key]
           obj[key] = d[key]
         })
@@ -150,24 +138,41 @@ export default {
         // .catch(err => {
         //   console.log('Fetch error', err)
         // })
+    },
+
+    fetch2016Data(project) {
+      fetch(`/data/${project}/2016/data.json`)
+        .then(response => response.json())
+        .then(response => {
+          this.data2016 = this.transformData(response)
+        })
+        // .catch(err => {
+        //   console.log('Fetch error', err)
+        // })
+    },
+
+    fetch2017Data(project) {
+      fetch(`/data/${project}/2017/data.json`)
+        .then(response => response.json())
+        .then(response => {
+          this.data2017 = this.transformData(response)
+        })
+        // .catch(err => {
+        //   console.log('Fetch error', err)
+        // })
     }
   }
 }
 </script>
 <style lang="scss" scoped>
-.selectors {
+h2 {
   text-align: center;
-  border-bottom: 1px dashed #ccc;
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
-}
-.selectors .select {
-  font-size: 1rem;
-  margin-right: 1rem;
+  border-bottom: 1px dotted #eee;
 }
 .chart {
-  border-bottom: 1px solid #eee;
-  padding-bottom: 1rem;
-  margin-bottom: 1rem;
+  width: 50%;
+}
+.cascade {
+  margin: 3rem 0;
 }
 </style>
