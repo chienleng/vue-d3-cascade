@@ -1,0 +1,35 @@
+[{
+  "stage": "Prevalent",
+  "rmale": 790,
+  "rfemale": 874,
+  "umale": 839,
+  "ufemale": 1024
+},
+{
+  "stage": "Screened",
+  "rmale": 190,
+  "rfemale": 346,
+  "umale": 360,
+  "ufemale": 682
+},
+{
+  "stage": "Diagnosed",
+  "rmale": 149,
+  "rfemale": 334,
+  "umale": 262,
+  "ufemale": 524
+},
+{
+  "stage": "Treated",
+  "rmale": 17,
+  "rfemale": 39,
+  "umale": 27,
+  "ufemale": 52
+},
+{
+  "stage": "Controlled",
+  "rmale": 14,
+  "rfemale": 31,
+  "umale": 22,
+  "ufemale": 42
+}]

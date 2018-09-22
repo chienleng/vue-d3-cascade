@@ -1,6 +1,6 @@
 <template>
   <div class="stacked-cascade">
-    <table class="legend-table table is-narrow">
+    <table class="legend-table table is-narrow" v-if="legendDisplay">
       <tbody>
         <tr v-for="key in legendKeys" :key="key">
           <td>
@@ -35,6 +35,8 @@ export default {
     dict: Object,
     yAxisTitle: String,
     colourScheme: Array,
+    legendDisplay: Boolean,
+    marginObj: Object,
   },
 
   data() {
@@ -78,6 +80,9 @@ export default {
 
   created() {
     this.setupLegend(this.keys)
+    if (this.marginObj) {
+      this.margin = this.marginObj
+    }
   },
 
   mounted() {
@@ -237,8 +242,8 @@ export default {
         .attr('fill', (d) => this.z(d.key))
 
       const rects = stackedFillBar.selectAll('rect')
-        .data((d, i) => {
-          d.forEach((k, j) => {
+        .data((d) => {
+          d.forEach((k) => {
             k.key = d.key
           })
           return d
@@ -315,9 +320,9 @@ export default {
       stageTotal
         .enter().append('text')
         .attr('x', (d) => this.x(d.stage) + this.x.bandwidth(d.stage) + this.x.bandwidth(d.stage)/2)
-        .attr('y', (d) => this.y(0) - 2)
+        .attr('y', () => this.y(0) + 9)
         .attr('text-anchor', 'middle')
-        .style('font-size', '12px')
+        .style('font-size', '9px')
         .style('font-weight', 'bold')
         .style('fill', '#00267a')
         .text((d, i) => { return lastDataIndex === i ? '' : `${d3.format('.1f')(d.conversion)}%` })
@@ -328,7 +333,7 @@ export default {
         .data(stack(data))
 
       const categoryText = stackedBarTexts.enter().append('g').selectAll('text')
-        .data((d, i) => {
+        .data((d) => {
           const lastIndex = d.length - 1
           // add key
           d.forEach((k, j) => {
@@ -354,7 +359,7 @@ export default {
         .style('font-weight', 'bold')
         .style('fill', '#00267a')
         .style('display', 'none')
-        .text((d, i) => { return `${d3.format(',.0f')(d[1] - d[0])}` })
+        .text((d) => { return `${d3.format(',.0f')(d[1] - d[0])}` })
       
       categoryText.enter().append('text')
         .attr('class', (d) => `cat-text ${d.key}-cat-text`)
@@ -370,9 +375,9 @@ export default {
         .attr('class', (d) => `cat-text ${d.key}-cat-text`)
         .attr('x', (d) => this.x(d.data.stage) + this.x.bandwidth(d.data.stage) + this.x.bandwidth(d.data.stage)/2)
         // .attr('y', d => this.y(d[0]) - 2)
-        .attr('y', d => this.y(0) - 2)
+        .attr('y', () => this.y(0) + 9)
         .attr('text-anchor', 'middle')
-        .style('font-size', '12px')
+        .style('font-size', '9px')
         .style('font-weight', 'bold')
         .style('fill', '#00267a')
         .style('display', 'none')

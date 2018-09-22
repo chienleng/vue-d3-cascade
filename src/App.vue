@@ -1,9 +1,9 @@
 <template>
   <div id="app">
     <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link> |
-      <router-link to="/view2">View 2</router-link>
+      <router-link to="/cascade-stacked-1">Cascade Stacked</router-link> |
+      <router-link to="/cascade-stacked-2">Cascade Stacked Comparisons</router-link> |
+      <router-link to="/multibar">Multi Bar w/ Cascade Stacked</router-link>
     </div>
     <router-view/>
   </div>
@@ -18,6 +18,7 @@
 }
 #nav {
   padding: 30px;
+  text-align: center;
   a {
     font-weight: bold;
     color: #2c3e50;

@@ -10,15 +10,17 @@
           :chartData="data2016"
           :colourScheme="['#3182bd']"
           :keys="['total']"
-          :dict="{ total: 'Total' }" />
+          :dict="{ total: 'Total' }"
+          :legendDisplay="true" />
 
         <stacked-cascade class="cascade"
           :h="300"
           :yAxisTitle="'Number of people'"
           :chartData="data2016"
-          :colourScheme="colourScheme2"
+          :colourScheme="colourScheme"
           :keys="keys"
-          :dict="dict" />
+          :dict="dict"
+          :legendDisplay="true" />
       </div>
 
       <div class="column chart">
@@ -29,14 +31,16 @@
           :chartData="data2017"
           :colourScheme="['#3182bd']"
           :keys="['total']"
-          :dict="{ total: 'Total' }" />
+          :dict="{ total: 'Total' }"
+          :legendDisplay="true" />
         <stacked-cascade class="cascade"
           :h="300"
           :yAxisTitle="''"
           :chartData="data2017"
-          :colourScheme="colourScheme2"
+          :colourScheme="colourScheme"
           :keys="keys"
-          :dict="dict" />
+          :dict="dict"
+          :legendDisplay="true" />
       </div>
     </div>
   </div>
@@ -44,6 +48,7 @@
 
 <script>
 import * as d3 from 'd3'
+import dataTransform from '@/modules/data-transform'
 import StackedCascade from '@/components/StackedCascade.vue'
 
 export default {
@@ -100,40 +105,12 @@ export default {
     this.fetch2017Data(this.project)
   },
   methods: {
-    transformData(data) {
-      const lastIndex = data.length - 1
-      const transformed = data.map(d => {
-        let obj = { stage: d.stage }
-        let total = 0;
-
-        this.keys.forEach(key => {
-          total += d[key]
-          obj[key] = d[key]
-        })
-
-        obj.total = total
-
-        return obj
-      })
-
-      transformed.forEach((d, i) => {
-        if (i === lastIndex) {
-          d.loss = 0
-          d.conversion = 0
-        } else {
-          d.loss = transformed[i].total - transformed[i+1].total
-          d.conversion = transformed[i+1].total / transformed[i].total * 100
-        }
-      })
-
-      return transformed
-    },
 
     fetchData(project, year) {
       fetch(`/data/${project}/${year}/data.json`)
         .then(response => response.json())
         .then(response => {
-          this.chartData = this.transformData(response)
+          this.chartData = dataTransform(this.keys, response)
         })
         // .catch(err => {
         //   console.log('Fetch error', err)
@@ -144,7 +121,7 @@ export default {
       fetch(`/data/${project}/2016/data.json`)
         .then(response => response.json())
         .then(response => {
-          this.data2016 = this.transformData(response)
+          this.data2016 = dataTransform(this.keys, response)
         })
         // .catch(err => {
         //   console.log('Fetch error', err)
@@ -155,7 +132,7 @@ export default {
       fetch(`/data/${project}/2017/data.json`)
         .then(response => response.json())
         .then(response => {
-          this.data2017 = this.transformData(response)
+          this.data2017 = dataTransform(this.keys, response)
         })
         // .catch(err => {
         //   console.log('Fetch error', err)

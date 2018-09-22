@@ -21,7 +21,8 @@
           :chartData="chartData"
           :colourScheme="projectColour"
           :keys="projectKeys"
-          :dict="projectDict" />
+          :dict="projectDict"
+          :legendDisplay="true" />
       </div>
 
       <div class="chart">
@@ -31,7 +32,8 @@
           :chartData="chartData"
           :colourScheme="['#3182bd']"
           :keys="['total']"
-          :dict="{ total: 'Total' }" />
+          :dict="{ total: 'Total' }"
+          :legendDisplay="true" />
       </div>
     </div>
   </div>
@@ -42,7 +44,6 @@ import * as d3 from 'd3'
 import StackedCascade from '@/components/StackedCascade.vue'
 
 export default {
-  name: 'app',
   components: {
     StackedCascade,
   },

@@ -12,14 +12,19 @@ export default new Router({
       component: Home
     },
     {
-      path: '/about',
-      name: 'about',
-      component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
+      path: '/cascade-stacked-1',
+      name: 'cascade-stacked-1',
+      component: () => import(/* webpackChunkName: "cascade-stacked-1" */ './views/CascadeStackedView.vue')
     },
     {
-      path: '/view2',
-      name: 'view2',
-      component: () => import(/* webpackChunkName: "view2" */ './views/View2.vue')
+      path: '/cascade-stacked-2',
+      name: 'cascade-stacked-2',
+      component: () => import(/* webpackChunkName: "cascade-stacked-2" */ './views/CascadeStackedComparisonView.vue')
+    },
+    {
+      path: '/multibar',
+      name: 'multibar',
+      component: () => import(/* webpackChunkName: "multibar" */ './views/MultiBarView.vue')
     }
   ]
 })
