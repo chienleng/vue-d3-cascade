@@ -1,4 +1,4 @@
-# a2
+# Vue D3 Cascade Stacked Vis
 
 ## Project setup
 ```
