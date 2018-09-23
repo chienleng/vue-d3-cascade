@@ -9,8 +9,8 @@
           :yAxisTitle="'Number of people'"
           :chartData="data2016"
           :colourScheme="['#3182bd']"
-          :keys="['total']"
-          :dict="{ total: 'Total' }"
+          :keys="['_total']"
+          :dict="{ _total: 'Total' }"
           :legendDisplay="true" />
 
         <stacked-cascade class="cascade"
@@ -30,8 +30,8 @@
           :yAxisTitle="'Number of people'"
           :chartData="data2017"
           :colourScheme="['#3182bd']"
-          :keys="['total']"
-          :dict="{ total: 'Total' }"
+          :keys="['_total']"
+          :dict="{ _total: 'Total' }"
           :legendDisplay="true" />
         <stacked-cascade class="cascade"
           :h="300"

@@ -190,7 +190,7 @@ export default {
 
       // axis and domain setup
       this.x.domain(data.map(r => r.stage))
-      this.y.domain([0, d3.max(data, r => r.total )]).range([this.height, 0]).nice()
+      this.y.domain([0, d3.max(data, r => r._total )]).range([this.height, 0]).nice()
 
       // this.y.domain([0, 90000]).range([this.height, 0])
       this.z.domain(keys)
@@ -302,16 +302,16 @@ export default {
       stageTotal
         .enter().append('text')
         .attr('x', (d) => this.x(d.stage) + 2)
-        .attr('y', (d) => this.y(d.total) - 2)
+        .attr('y', (d) => this.y(d._total) - 2)
         .style('font-size', '12px')
         .style('font-weight', 'bold')
         .style('fill', '#00267a')
-        .text(d => d3.format(',.0f')(d.total))
+        .text(d => d3.format(',.0f')(d._total))
       
       stageTotal
         .enter().append('text')
         .attr('x', (d) => this.x(d.stage) + this.x.bandwidth(d.stage) + 2)
-        .attr('y', (d) => this.y(d.total))
+        .attr('y', (d) => this.y(d._total))
         .style('font-size', '10px')
         .style('font-weight', 'bold')
         .style('fill', '#C74523')

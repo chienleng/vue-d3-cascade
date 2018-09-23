@@ -31,8 +31,8 @@
           :yAxisTitle="'Number of people'"
           :chartData="chartData"
           :colourScheme="['#3182bd']"
-          :keys="['total']"
-          :dict="{ total: 'Total' }"
+          :keys="['_total']"
+          :dict="{ _total: 'Total' }"
           :legendDisplay="true" />
       </div>
     </div>
@@ -41,6 +41,7 @@
 
 <script>
 import * as d3 from 'd3'
+import dataTransform from '@/modules/data-transform'
 import StackedCascade from '@/components/StackedCascade.vue'
 
 export default {
@@ -113,40 +114,11 @@ export default {
     this.fetchData(this.project, this.selected)
   },
   methods: {
-    transformData(data) {
-      const lastIndex = data.length - 1
-      const transformed = data.map(d => {
-        let obj = { stage: d.stage }
-        let total = 0;
-
-        this.projectKeys.forEach(key => {
-          total += d[key]
-          obj[key] = d[key]
-        })
-
-        obj.total = total
-
-        return obj
-      })
-
-      transformed.forEach((d, i) => {
-        if (i === lastIndex) {
-          d.loss = 0
-          d.conversion = 0
-        } else {
-          d.loss = transformed[i].total - transformed[i+1].total
-          d.conversion = transformed[i+1].total / transformed[i].total * 100
-        }
-      })
-
-      return transformed
-    },
-
     fetchData(project, year) {
       fetch(`/data/${project}/${year}/data.json`)
         .then(response => response.json())
         .then(response => {
-          this.chartData = this.transformData(response)
+          this.chartData = dataTransform(this.projectKeys, response)
         })
         // .catch(err => {
         //   console.log('Fetch error', err)

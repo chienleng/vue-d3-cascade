@@ -9,7 +9,7 @@ export default function(keys, data) {
       obj[key] = d[key]
     })
 
-    obj.total = total
+    obj._total = total
 
     return obj
   })
@@ -19,8 +19,8 @@ export default function(keys, data) {
       d.loss = 0
       d.conversion = 0
     } else {
-      d.loss = transformed[i].total - transformed[i+1].total
-      d.conversion = transformed[i+1].total / transformed[i].total * 100
+      d.loss = transformed[i]._total - transformed[i+1]._total
+      d.conversion = transformed[i+1]._total / transformed[i]._total * 100
     }
   })
 

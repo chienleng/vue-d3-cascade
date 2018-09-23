@@ -43,8 +43,8 @@
           :yAxisTitle="''"
           :chartData="defaultData"
           :colourScheme="[colourScheme2[0]]"
-          :keys="['total']"
-          :dict="{ total: 'Default budget' }"
+          :keys="['_total']"
+          :dict="{ _total: 'Default budget' }"
           :legendDisplay="true" />
         
         <stacked-cascade class="cascade"
@@ -53,8 +53,8 @@
           :yAxisTitle="''"
           :chartData="doubledData"
           :colourScheme="[colourScheme2[1]]"
-          :keys="['total']"
-          :dict="{ total: 'Doubled budget' }"
+          :keys="['_total']"
+          :dict="{ _total: 'Doubled budget' }"
           :legendDisplay="true" />
         
         <stacked-cascade class="cascade"
@@ -63,8 +63,8 @@
           :yAxisTitle="''"
           :chartData="zeroData"
           :colourScheme="[colourScheme2[2]]"
-          :keys="['total']"
-          :dict="{ total: 'Zero budget' }"
+          :keys="['_total']"
+          :dict="{ _total: 'Zero budget' }"
           :legendDisplay="true" />
       </div>
 
@@ -173,12 +173,11 @@ export default {
 
     getTotal(stage, data) {
       const stageData = data.find(d => d.stage === stage)
-      let total = stageData.total
+      let total = stageData._total
       return total
     },
 
     fetchData(project, year) {
-
       Promise.all([
         fetch(`/data/${project}/${year}/data.json`).then(response => response.json()),
         fetch(`/data/${project}/${year}/doubled.json`).then(response => response.json()),
