@@ -20,6 +20,30 @@ yarn run build
 yarn run lint
 ```
 
+## Basic use of component
+Import the component, i.e.
+```
+import StackedCascade from '@/components/StackedCascade.vue'
+```
+
+HTML
+```
+<stacked-cascade
+  :chartData="[
+    { stage: 'Prevalent', all: 4000 },
+    { stage: 'Screened', all: 3000 },
+    { stage: 'Diagnosed', all: 2000 },
+    { stage: 'Treated', all: 1000 },
+    { stage: 'Controlled', all: 500 },
+  ]"
+  :keys="['all']"
+  :dict="{ all: 'All Population' }"
+  :yAxisTitle="'Number of people'"
+  :h="400"
+  :colourScheme="['#3182bd']"
+  :legendDisplay="true" />
+```
+
 ## Component Props
 
 `chartData` **(required)** — List of stages with key/values
