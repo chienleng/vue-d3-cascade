@@ -65,31 +65,31 @@ e.g.
 ```
 
 
-`dict` _(optional)_**_ — Long labels for the keys
+`dict` _(optional)_ — Long labels for the keys
 e.g.
 ```
 { all: 'All Population' }
 ```
 
-`yAxisTitle` _(optional)_**_ — Y Axis Title
+`yAxisTitle` _(optional)_ — Y Axis Title
 e.g.
 ```
 'Number of people'
 ```
 
-`h` _(optional)_**_ — Chart height
+`h` _(optional)_ — Chart height
 e.g.
 ```
 400
 ```
 
-`colourScheme` _(optional)_**_ — Array of colours (or you can also use d3.scale-chromatic, i.e. d3.schemePaired)
+`colourScheme` _(optional)_ — Array of colours (or you can also use d3.scale-chromatic, i.e. d3.schemePaired)
 e.g.
 ```
 ['#3182bd']
 ```
 
-`legendDisplay` _(optional)_**_ — boolean
+`legendDisplay` _(optional)_ — boolean
 e.g.
 ```
 true
