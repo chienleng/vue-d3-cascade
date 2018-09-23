@@ -105,7 +105,7 @@
 
 <script>
 import * as d3 from 'd3'
-import dataTransform from '@/modules/data-transform'
+import { transformDataForChartRender } from '@/modules/data-transform'
 import Multibar from '@/components/Multibar.vue'
 import StackedCascade from '@/components/StackedCascade.vue'
 
@@ -183,9 +183,9 @@ export default {
         fetch(`/data/${project}/${year}/doubled.json`).then(response => response.json()),
         fetch(`/data/${project}/${year}/zero.json`).then(response => response.json())
       ]).then(([defaultData, doubledData, zeroData]) => {
-        const de = dataTransform(this.keys, defaultData)
-        const doubled = dataTransform(this.keys, doubledData)
-        const zero = dataTransform(this.keys, zeroData)
+        const de = transformDataForChartRender(this.keys, defaultData)
+        const doubled = transformDataForChartRender(this.keys, doubledData)
+        const zero = transformDataForChartRender(this.keys, zeroData)
 
         const stages = de.map(d => d.stage)
 

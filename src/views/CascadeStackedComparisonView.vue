@@ -48,7 +48,7 @@
 
 <script>
 import * as d3 from 'd3'
-import dataTransform from '@/modules/data-transform'
+import { transformDataForChartRender } from '@/modules/data-transform'
 import StackedCascade from '@/components/StackedCascade.vue'
 
 export default {
@@ -110,7 +110,7 @@ export default {
       fetch(`/data/${project}/${year}/data.json`)
         .then(response => response.json())
         .then(response => {
-          this.chartData = dataTransform(this.keys, response)
+          this.chartData = transformDataForChartRender(this.keys, response)
         })
         // .catch(err => {
         //   console.log('Fetch error', err)
@@ -121,7 +121,7 @@ export default {
       fetch(`/data/${project}/2016/data.json`)
         .then(response => response.json())
         .then(response => {
-          this.data2016 = dataTransform(this.keys, response)
+          this.data2016 = transformDataForChartRender(this.keys, response)
         })
         // .catch(err => {
         //   console.log('Fetch error', err)
@@ -132,7 +132,7 @@ export default {
       fetch(`/data/${project}/2017/data.json`)
         .then(response => response.json())
         .then(response => {
-          this.data2017 = dataTransform(this.keys, response)
+          this.data2017 = transformDataForChartRender(this.keys, response)
         })
         // .catch(err => {
         //   console.log('Fetch error', err)

@@ -22,6 +22,11 @@ export default new Router({
       component: () => import(/* webpackChunkName: "cascade-stacked-2" */ './views/CascadeStackedComparisonView.vue')
     },
     {
+      path: '/cascade-stacked-3',
+      name: 'cascade-stacked-3',
+      component: () => import(/* webpackChunkName: "cascade-stacked-3" */ './views/CascadeStackedView2.vue')
+    },
+    {
       path: '/multibar',
       name: 'multibar',
       component: () => import(/* webpackChunkName: "multibar" */ './views/MultiBarView.vue')

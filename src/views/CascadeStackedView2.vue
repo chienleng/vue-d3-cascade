@@ -1,64 +1,22 @@
 <template>
   <div class="about">
-    <div class="selectors">
-      <select class="select" v-model="project">
-        <option v-for="option in projectOptions" :key="option.value" :value="option.value">
-          {{ option.text }}
-        </option>
-      </select>
-      <select class="select" v-model="selected">
-        <option v-for="option in options" :key="option.value" :value="option.value">
-          {{ option.text }}
-        </option>
-      </select>
-    </div>
-
     <div class="">
-      <div class="chart">
+      <div class="chart" style="max-width: 800px; margin: 0 auto;">
         <stacked-cascade class="cascade"
           :h="400"
           :yAxisTitle="'Number of people'"
-          :chartData="chartData"
+          :cascadeData="chartData"
           :colourScheme="projectColour"
-          :keys="projectKeys"
-          :dict="projectDict"
           :legendDisplay="true" />
       </div>
 
-      <div class="chart" style="max-width : 800px; margin: 0 auto;">
-        <stacked-cascade
-          :chartData="[
-            { stage: 'Prevalent', all: 4000 },
-            { stage: 'Screened', all: 3000 },
-            { stage: 'Diagnosed', all: 2000 },
-            { stage: 'Treated', all: 1000 },
-            { stage: 'Controlled', all: 500 },
-          ]"
-          :keys="['all']"
-          :dict="{ all: 'All Population' }"
-          :yAxisTitle="'Number of people'"
-          :h="400"
-          :colourScheme="['#3182bd']"
-          :legendDisplay="true" />
-      </div>
-
-      <!-- <div class="chart">
-        <stacked-cascade class="cascade"
-          :h="200"
-          :yAxisTitle="'Number of people'"
-          :chartData="chartData"
-          :colourScheme="['#3182bd']"
-          :keys="['_total']"
-          :dict="{ _total: 'Total' }"
-          :legendDisplay="true" />
-      </div> -->
     </div>
   </div>
 </template>
 
 <script>
 import * as d3 from 'd3'
-import StackedCascade from '@/components/StackedCascade.vue'
+import StackedCascade from '@/components/StackedCascade2.vue'
 
 export default {
   components: {
@@ -76,7 +34,7 @@ export default {
         { text: '2016', value: '2016' },
         { text: '2017', value: '2017' },
       ],
-      chartData: [],
+      chartData: {},
       keys: [
         'ufemale',
         'umale',
@@ -134,6 +92,58 @@ export default {
       fetch(`/data/${project}/${year}/data.json`)
         .then(response => response.json())
         .then(response => {
+          // this.chartData = response
+        })
+        // .catch(err => {
+        //   console.log('Fetch error', err)
+        // })
+
+
+      fetch(`/data/json_test.json`)
+        .then(response => response.json())
+        .then(response => {
+          let data = {}
+
+          const stages = response.stages.main
+          const pops = response.pops
+          const results = response.results
+
+          const keys = pops.map(p => {
+            const s = p.replace(/ +/g, '')
+            return s.toLowerCase()
+          })
+          let dict = {}
+          keys.forEach((k, i) => {
+            dict[k] = pops[i]
+          })
+
+          results.forEach(r => {
+            const yearRange = response.t[r]
+            data[r] = {}
+
+            yearRange.forEach((y, i) => {
+              data[r][y] = []
+
+              stages.forEach((stage, stageIndex) => {
+                data[r][y].push({
+                  stage
+                })
+
+                pops.forEach(p => {
+                  const value = response.model[r].main[p][stage][i]
+                  const key = p.replace(/ +/g, '').toLowerCase()
+
+                  data[r][y][stageIndex][key] = value
+                  // console.log(`${r} ${key} ${stage} ${y} ${i} — ${value}`)
+                })
+              })
+            })            
+          })
+
+          this.keys = keys
+          this.dict = dict
+          // this.chartData = data['Baseline']['2035']
+
           this.chartData = response
         })
         // .catch(err => {
