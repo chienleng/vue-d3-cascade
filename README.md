@@ -1,25 +1,5 @@
 # Vue D3 Cascade Stacked Vis
 
-## Project setup
-```
-yarn install
-```
-
-### Compiles and hot-reloads for development
-```
-yarn run serve
-```
-
-### Compiles and minifies for production
-```
-yarn run build
-```
-
-### Lints and fixes files
-```
-yarn run lint
-```
-
 ## Basic use of component
 Import the component, i.e.
 ```
@@ -93,4 +73,25 @@ e.g.
 e.g.
 ```
 true
+```
+
+
+## Project setup
+```
+yarn install
+```
+
+### Compiles and hot-reloads for development
+```
+yarn run serve
+```
+
+### Compiles and minifies for production
+```
+yarn run build
+```
+
+### Lints and fixes files
+```
+yarn run lint
 ```
