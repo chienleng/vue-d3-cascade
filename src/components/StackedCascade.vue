@@ -9,7 +9,7 @@
               :style="{ 'background-color': legendColour[key] }">
             </span>
           </td>
-          <td>{{dict[key]}}</td>
+          <td>{{ getLabel(key)}}</td>
           <!-- <td style="width: 50px; font-weight: bold; text-align: right;">
             <div v-if="showLegend">
               {{legend[key]}}
@@ -23,6 +23,7 @@
 
 <script>
 import * as d3 from 'd3'
+import dataTransform from '@/modules/data-transform'
 import cascadeStep from '@/modules/cascade-step'
 
 export default {
@@ -43,6 +44,7 @@ export default {
     return {
       svgWidth: 0,
       svgHeight: this.h || 300,
+      colours: d3.schemeDark2,
       width: 0,
       height: 0,
       margin: { left: 75, right: 40, top: 10, bottom: 20 },
@@ -73,12 +75,12 @@ export default {
     keys(newData) {
       this.setupLegend(newData)
     },
-    colourScheme() {
-      this.redraw()
-    }
   },
 
   created() {
+    if (this.colourScheme && this.colourScheme.length > 0) {
+      this.colours = this.colourScheme
+    }
     this.setupLegend(this.keys)
     if (this.marginObj) {
       this.margin = this.marginObj
@@ -102,12 +104,16 @@ export default {
       // create the legend
       keys.forEach((key, i) => {
         this.legend[key] = 0
-        this.legendColour[key] = this.colourScheme[i]
+        this.legendColour[key] = this.colours[i]
       })
 
       this.legendKeys = keys.slice()
       // reverse the order of the keys so it is in line with the stacked chart
       this.legendKeys.reverse()
+    },
+
+    getLabel(key) {
+      return this.dict ? this.dict[key] : key
     },
 
     redraw() {
@@ -136,7 +142,7 @@ export default {
 
       this.y = d3.scaleLinear()
       this.z = d3.scaleOrdinal()
-        .range(this.colourScheme)
+        .range(this.colours)
         
       this.xAxis = d3.axisBottom(this.x)
       this.yAxis = d3.axisLeft(this.y)
@@ -182,7 +188,8 @@ export default {
         .style('text-anchor', 'middle')
     },
 
-    update(data) {
+    update(chartData) {
+      const data = dataTransform(this.keys, chartData)
       const keys = this.keys
       const stack = d3.stack()
 

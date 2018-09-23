@@ -25,7 +25,24 @@
           :legendDisplay="true" />
       </div>
 
-      <div class="chart">
+      <div class="chart" style="max-width : 800px; margin: 0 auto;">
+        <stacked-cascade class="cascade"
+          :h="400"
+          :yAxisTitle="'Number of people'"
+          :chartData="[
+            { stage: 'Prevalent', all: 4000 },
+            { stage: 'Screened', all: 3000 },
+            { stage: 'Diagnosed', all: 2000 },
+            { stage: 'Treated', all: 1000 },
+            { stage: 'Controlled', all: 500 },
+          ]"
+          :colourScheme="['#3182bd']"
+          :keys="['all']"
+          :dict="{ all: 'All Population' }"
+          :legendDisplay="true" />
+      </div>
+
+      <!-- <div class="chart">
         <stacked-cascade class="cascade"
           :h="200"
           :yAxisTitle="'Number of people'"
@@ -34,14 +51,13 @@
           :keys="['_total']"
           :dict="{ _total: 'Total' }"
           :legendDisplay="true" />
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
 
 <script>
 import * as d3 from 'd3'
-import dataTransform from '@/modules/data-transform'
 import StackedCascade from '@/components/StackedCascade.vue'
 
 export default {
@@ -118,7 +134,7 @@ export default {
       fetch(`/data/${project}/${year}/data.json`)
         .then(response => response.json())
         .then(response => {
-          this.chartData = dataTransform(this.projectKeys, response)
+          this.chartData = response
         })
         // .catch(err => {
         //   console.log('Fetch error', err)
