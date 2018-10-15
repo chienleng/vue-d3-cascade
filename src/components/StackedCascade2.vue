@@ -14,8 +14,17 @@
     </div>
 
     <table class="legend-table table is-narrow" v-if="legendDisplay">
+      <thead>
+        <tr>
+          <th><input type="checkbox" v-model="allSelected"></th>
+          <th>All</th>
+        </tr>
+      </thead>
       <tbody>
         <tr v-for="key in legendKeys" :key="key">
+          <td>
+            <input type="checkbox" :value="key" v-model="selectedKeys" @click="allSelected = false">
+          </td>
           <td>
             <span 
               class="legend-colour" 
@@ -49,6 +58,8 @@ export default {
   data() {
     return {
       keys: [],
+      selectedKeys: [],
+      allSelected: false,
       dict: {},
       result: null,
       resultsOptions: [],
@@ -88,6 +99,16 @@ export default {
     keys(newData) {
       this.setupLegend(newData)
     },
+    selectedKeys(newData) {
+      if (this.year) {
+        this.update()
+      }
+    },
+    allSelected(isAllSelected) {
+      if (isAllSelected) {
+        this.selectedKeys = this.keys
+      }
+    },
     result() {
       this.update()
     },
@@ -126,12 +147,24 @@ export default {
       })
 
       this.legendKeys = keys.slice()
+      this.selectedKeys = keys.slice()
       // reverse the order of the keys so it is in line with the stacked chart
       this.legendKeys.reverse()
     },
 
     getLabel(key) {
       return this.dict ? this.dict[key] : key
+    },
+
+    getKeysInOrder(allKeys, selectedKeys) {
+      let keys = []
+      allKeys.forEach(key => {
+        const find = selectedKeys.find(selectedKey => key === selectedKey)
+        if (find) {
+          keys.push(find)
+        }
+      })
+      return keys
     },
 
     redraw() {
@@ -144,7 +177,6 @@ export default {
 
     updateOptions(data) {
       const updated = transformCascadeData(data)
-      console.log(updated)
       this.keys = updated.keys
       this.dict = updated.dict
 
@@ -224,11 +256,9 @@ export default {
     },
 
     update() {
-      let ktest = this.keys.slice(0)
-      ktest.pop()
-      const data = transformDataForChartRender(ktest, this.currentData[this.result][this.year])
-
-      const keys = ktest
+      const data = transformDataForChartRender(this.selectedKeys, this.currentData[this.result][this.year])
+      const keys = this.getKeysInOrder(this.keys, this.selectedKeys)
+      const keyColours = keys.map(key => this.legendColour[key])
       const stack = d3.stack()
 
       stack.keys(keys)
@@ -236,9 +266,7 @@ export default {
       // axis and domain setup
       this.x.domain(data.map(r => r.stage))
       this.y.domain([0, d3.max(data, r => r._total )]).range([this.height, 0]).nice()
-
-      // this.y.domain([0, 90000]).range([this.height, 0])
-      this.z.domain(keys)
+      this.z = d3.scaleOrdinal().range(keyColours).domain(keys)
       
       this.xAxisGroup
         .call(this.xAxis)
