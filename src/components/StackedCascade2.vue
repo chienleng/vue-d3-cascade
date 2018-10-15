@@ -144,6 +144,7 @@ export default {
 
     updateOptions(data) {
       const updated = transformCascadeData(data)
+      console.log(updated)
       this.keys = updated.keys
       this.dict = updated.dict
 
@@ -223,9 +224,11 @@ export default {
     },
 
     update() {
-      const data = transformDataForChartRender(this.keys, this.currentData[this.result][this.year])
+      let ktest = this.keys.slice(0)
+      ktest.pop()
+      const data = transformDataForChartRender(ktest, this.currentData[this.result][this.year])
 
-      const keys = this.keys
+      const keys = ktest
       const stack = d3.stack()
 
       stack.keys(keys)
