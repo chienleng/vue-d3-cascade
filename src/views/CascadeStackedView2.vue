@@ -98,50 +98,49 @@ export default {
         //   console.log('Fetch error', err)
         // })
 
-
-      fetch(`/data/json_test.json`)
+      // `/data/json_test.json`
+      fetch(`/data/json_test2.json`)
         .then(response => response.json())
         .then(response => {
-          let data = {}
+          // let data = {}
 
-          const stages = response.stages.main
-          const pops = response.pops
-          const results = response.results
+          // const stages = response.stages.main
+          // const pops = response.pops
+          // const results = response.results
 
-          const keys = pops.map(p => {
-            const s = p.replace(/ +/g, '')
-            return s.toLowerCase()
-          })
-          let dict = {}
-          keys.forEach((k, i) => {
-            dict[k] = pops[i]
-          })
+          // const keys = pops.map(p => {
+          //   const s = p.replace(/ +/g, '')
+          //   return s.toLowerCase()
+          // })
+          // let dict = {}
+          // keys.forEach((k, i) => {
+          //   dict[k] = pops[i]
+          // })
 
-          results.forEach(r => {
-            const yearRange = response.t[r]
-            data[r] = {}
+          // results.forEach(r => {
+          //   const yearRange = response.t[r]
+          //   data[r] = {}
 
-            yearRange.forEach((y, i) => {
-              data[r][y] = []
+          //   yearRange.forEach((y, i) => {
+          //     data[r][y] = []
 
-              stages.forEach((stage, stageIndex) => {
-                data[r][y].push({
-                  stage
-                })
+          //     stages.forEach((stage, stageIndex) => {
+          //       data[r][y].push({
+          //         stage
+          //       })
 
-                pops.forEach(p => {
-                  const value = response.model[r].main[p][stage][i]
-                  const key = p.replace(/ +/g, '').toLowerCase()
+          //       pops.forEach(p => {
+          //         const value = response.model[r].main[p][stage][i]
+          //         const key = p.replace(/ +/g, '').toLowerCase()
 
-                  data[r][y][stageIndex][key] = value
-                  // console.log(`${r} ${key} ${stage} ${y} ${i} — ${value}`)
-                })
-              })
-            })            
-          })
+          //         data[r][y][stageIndex][key] = value
+          //       })
+          //     })
+          //   })            
+          // })
 
-          this.keys = keys
-          this.dict = dict
+          // this.keys = keys
+          // this.dict = dict
           // this.chartData = data['Baseline']['2035']
 
           this.chartData = response
