@@ -16,20 +16,32 @@
     <table class="legend-table table is-narrow" v-if="legendDisplay">
       <thead>
         <tr>
-          <th><input type="checkbox" v-model="allSelected"></th>
+          <th>
+            <div class="checkbox">
+              <input type="checkbox" id="totalCheckBox" v-model="allSelected">
+              <label for="totalCheckBox">
+                <span 
+                  class="legend-colour" 
+                  :style="{ 'background-color': legendColour['_total'] }">
+                </span>
+              </label>
+            </div>
+          </th>
           <th>All</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="key in legendKeys" :key="key">
           <td>
-            <input type="checkbox" :value="key" v-model="selectedKeys" @click="allSelected = false">
-          </td>
-          <td>
-            <span 
-              class="legend-colour" 
-              :style="{ 'background-color': legendColour[key] }">
-            </span>
+            <div class="checkbox">
+              <input type="checkbox" :id="key" v-show="!allSelected" :value="key" v-model="selectedKeys">
+              <label :for="key">
+                <span 
+                  class="legend-colour" 
+                  :style="{ 'background-color': allSelected ? '#eee' : legendColour[key] }">
+                </span>
+              </label>
+            </div>
           </td>
           <td>{{ getLabel(key)}}</td>
         </tr>
@@ -42,6 +54,9 @@
 import * as d3 from 'd3'
 import { transformDataForChartRender, transformCascadeData } from '@/modules/data-transform'
 import cascadeStep from '@/modules/cascade-step'
+
+const TOTAL = '_total'
+const TOTAL_COLOUR = '#0c2544'
 
 export default {
   name: 'stacked-cascade',
@@ -106,6 +121,8 @@ export default {
     },
     allSelected(isAllSelected) {
       if (isAllSelected) {
+        this.selectedKeys = [TOTAL]
+      } else {
         this.selectedKeys = this.keys
       }
     },
@@ -146,6 +163,8 @@ export default {
         this.legendColour[key] = this.colours[i]
       })
 
+      this.legendColour[TOTAL] = TOTAL_COLOUR
+
       this.legendKeys = keys.slice()
       this.selectedKeys = keys.slice()
       // reverse the order of the keys so it is in line with the stacked chart
@@ -158,12 +177,18 @@ export default {
 
     getKeysInOrder(allKeys, selectedKeys) {
       let keys = []
-      allKeys.forEach(key => {
-        const find = selectedKeys.find(selectedKey => key === selectedKey)
-        if (find) {
-          keys.push(find)
-        }
-      })
+
+      if (selectedKeys[0] === TOTAL) {
+        keys = selectedKeys
+      } else {
+        allKeys.forEach(key => {
+          const find = selectedKeys.find(selectedKey => key === selectedKey)
+          if (find) {
+            keys.push(find)
+          }
+        })
+      }
+      
       return keys
     },
 
@@ -172,7 +197,7 @@ export default {
       this.svg.remove()
       this.setupWidthHeight()
       this.setup()
-      this.updateOptions(this.cascadeData)
+      this.update()
     },
 
     updateOptions(data) {
@@ -256,10 +281,14 @@ export default {
     },
 
     update() {
-      const data = transformDataForChartRender(this.selectedKeys, this.currentData[this.result][this.year])
+      const data = this.allSelected ? 
+        transformDataForChartRender(this.keys, this.currentData[this.result][this.year]) :
+        transformDataForChartRender(this.selectedKeys, this.currentData[this.result][this.year])
       const keys = this.getKeysInOrder(this.keys, this.selectedKeys)
       const keyColours = keys.map(key => this.legendColour[key])
       const stack = d3.stack()
+
+      console.log(data, keys, keyColours)
 
       stack.keys(keys)
 
@@ -486,8 +515,72 @@ export default {
   top: 10px;
   font-size: 11px;
 }
-.legend-table.table td {
-  padding: 3px 5px 2px;
+
+.checkbox {
+  width: 15px;
+  height: 15px;
+  
+  span.legend-colour {
+    position: absolute;
+    top: 0;
+  }
+
+  label {
+    position: relative;
+
+    &::before {
+      position: absolute;
+      top: 0;
+
+      content: '';
+      display: inline-block;
+      
+      height: 13px;
+      width: 13px;
+      
+      border: 1px solid #999;   
+    }
+
+    &::after {
+      position: absolute;
+      left: 3px;
+      top: 4px;
+
+      content: '';
+      display: inline-block;
+      height: 4px;
+      width: 9px;
+      border-left: 1px solid #fff;
+      border-bottom: 1px solid #fff;
+      
+      transform: rotate(-50deg);
+    }
+  }
+
+  input[type='checkbox'] {
+    display: none;
+  }
+
+  input[type='checkbox']:focus + label::before {
+    outline: rgb(59, 153, 252) auto 5px;
+  }
+
+  /* Hide the checkmark by default */
+  input[type='checkbox'] + label::after {
+      content: none;
+  }
+  /* Unhide the checkmark on the checked state */
+  input[type='checkbox']:checked + label::after {
+      content: '';
+  }
+
+}
+
+.legend-table.table {
+  td, th {
+    padding: 3px 5px 2px;
+    text-align: left;
+  }
 }
 .selections {
   text-align: center;
