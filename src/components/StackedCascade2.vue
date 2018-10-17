@@ -24,7 +24,7 @@
         <tr>
           <th>
             <div class="check-box grouped-population-checkbox">
-              <input type="checkbox" id="grouped-population-checkbox" v-model="allSelected">
+              <input type="checkbox" id="grouped-population-checkbox" v-model="groupPopulations">
               <label for="grouped-population-checkbox">
                 <span 
                   class="legend-colour"
@@ -40,11 +40,11 @@
         <tr v-for="key in legendKeys" :key="key">
           <td>
             <div class="check-box">
-              <input type="checkbox" :id="key" v-show="!allSelected" :value="key" v-model="selectedKeys">
+              <input type="checkbox" :id="key" :value="key" v-model="selectedKeys">
               <label :for="key">
                 <span 
                   class="legend-colour" 
-                  :style="{ 'background-color': allSelected ? '#00267a' : legendColour[key] }">
+                  :style="{ 'background-color': groupPopulations ? '#00267a' : legendColour[key] }">
                 </span>
               </label>
             </div>
@@ -80,7 +80,7 @@ export default {
     return {
       keys: [],
       selectedKeys: [],
-      allSelected: true,
+      groupPopulations: false,
       dict: {},
       result: null,
       resultsOptions: [],
@@ -125,13 +125,7 @@ export default {
         this.update()
       }
     },
-    allSelected(isAllSelected) {
-      // if (isAllSelected) {
-      //   this.selectedKeys = [TOTAL]
-      // } else {
-      //   this.selectedKeys = this.keys
-      // }
-      this.selectedKeys = this.keys
+    groupPopulations() {
       this.update()
     },
     result() {
@@ -176,7 +170,6 @@ export default {
       this.legendColour[TOTAL] = TOTAL_COLOUR
 
       this.legendKeys = keys.slice()
-      // this.selectedKeys = this.allSelected ? [TOTAL] : keys.slice()
       this.selectedKeys = keys.slice()
       // reverse the order of the keys so it is in line with the stacked chart
       this.legendKeys.reverse()
@@ -292,12 +285,9 @@ export default {
     },
 
     update() {
-      // const data = this.allSelected ? 
-      //   transformDataForChartRender(this.keys, this.currentData[this.result][this.year]) :
-      //   transformDataForChartRender(this.selectedKeys, this.currentData[this.result][this.year])
       const data = transformDataForChartRender(this.selectedKeys, this.currentData[this.result][this.year])
       const keys = this.getKeysInOrder(this.keys, this.selectedKeys)
-      const keyColours = keys.map(key => this.allSelected ? TOTAL_COLOUR : this.legendColour[key])
+      const keyColours = keys.map(key => this.groupPopulations ? TOTAL_COLOUR : this.legendColour[key])
       const stack = d3.stack()
 
       stack.keys(keys)
@@ -372,7 +362,7 @@ export default {
             this.legend[key] = d.data[key]
           })
 
-          if (!this.allSelected) {
+          if (!this.groupPopulations) {
             d3.selectAll('.fill-bar')
               .style('opacity', 0.5)
             d3.selectAll('.area')
@@ -390,7 +380,7 @@ export default {
         })
         .on('mouseout', (d) => {
 
-          if (!this.allSelected) {
+          if (!this.groupPopulations) {
             d3.selectAll('.fill-bar')
               .style('opacity', 1)
             d3.selectAll(`.cat-text`)
@@ -527,21 +517,31 @@ export default {
   td, th {
     padding: 3px 5px 2px;
     text-align: left;
+    border: none;
+    font-size: 12px;
+    font-weight: normal;
   }
 
   thead > tr > th,
   tbody > tr > td {
     background: transparent;
     color: #000;
-    // line-height: 1.8;
+    line-height: 1;
   }
 }
 
 .check-box {
   width: 15px;
   height: 15px;
+  position: relative;
 
   &.grouped-population-checkbox {
+    label::before {
+      border: 1px solid #000;
+      width: 15px;
+      height: 15px;
+    }
+    
     label::after {
       border-left: 1px solid #000;
       border-bottom: 1px solid #000;
@@ -554,18 +554,15 @@ export default {
   }
 
   label {
-    position: relative;
+    display: inline;
+    max-width: none;
+    font-weight: normal;
 
     &::before {
       position: absolute;
       
       content: '';
-      display: inline-block;
-      
-      height: 13px;
-      width: 13px;
-      
-      border: 1px solid #999;   
+      display: inline-block;   
     }
 
     &::after {
@@ -612,4 +609,5 @@ export default {
   }
 }
 </style>
+
 

@@ -36,4 +36,7 @@
     flex-grow: 1;
   }
 }
+*:before, *:after {
+  box-sizing: border-box;
+}
 </style>
