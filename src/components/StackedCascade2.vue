@@ -23,28 +23,28 @@
       <thead>
         <tr>
           <th>
-            <div class="check-box">
-              <input type="checkbox" id="totalCheckBox" v-model="allSelected">
-              <label for="totalCheckBox">
+            <div class="check-box grouped-population-checkbox">
+              <input type="checkbox" id="grouped-population-checkbox" v-model="allSelected">
+              <label for="grouped-population-checkbox">
                 <span 
-                  class="legend-colour" 
-                  :style="{ 'background-color': legendColour['_total'] }">
+                  class="legend-colour"
+                >
                 </span>
               </label>
             </div>
           </th>
-          <th>All Population</th>
+          <th>Group Populations</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="key in legendKeys" :key="key">
           <td>
             <div class="check-box">
-              <input type="checkbox" :disabled="allSelected" :id="key" v-show="!allSelected" :value="key" v-model="selectedKeys">
+              <input type="checkbox" :id="key" v-show="!allSelected" :value="key" v-model="selectedKeys">
               <label :for="key">
                 <span 
                   class="legend-colour" 
-                  :style="{ 'background-color': allSelected ? '#eee' : legendColour[key] }">
+                  :style="{ 'background-color': allSelected ? '#00267a' : legendColour[key] }">
                 </span>
               </label>
             </div>
@@ -126,11 +126,13 @@ export default {
       }
     },
     allSelected(isAllSelected) {
-      if (isAllSelected) {
-        this.selectedKeys = [TOTAL]
-      } else {
-        this.selectedKeys = this.keys
-      }
+      // if (isAllSelected) {
+      //   this.selectedKeys = [TOTAL]
+      // } else {
+      //   this.selectedKeys = this.keys
+      // }
+      this.selectedKeys = this.keys
+      this.update()
     },
     result() {
       this.update()
@@ -174,7 +176,8 @@ export default {
       this.legendColour[TOTAL] = TOTAL_COLOUR
 
       this.legendKeys = keys.slice()
-      this.selectedKeys = this.allSelected ? [TOTAL] : keys.slice()
+      // this.selectedKeys = this.allSelected ? [TOTAL] : keys.slice()
+      this.selectedKeys = keys.slice()
       // reverse the order of the keys so it is in line with the stacked chart
       this.legendKeys.reverse()
     },
@@ -289,11 +292,12 @@ export default {
     },
 
     update() {
-      const data = this.allSelected ? 
-        transformDataForChartRender(this.keys, this.currentData[this.result][this.year]) :
-        transformDataForChartRender(this.selectedKeys, this.currentData[this.result][this.year])
+      // const data = this.allSelected ? 
+      //   transformDataForChartRender(this.keys, this.currentData[this.result][this.year]) :
+      //   transformDataForChartRender(this.selectedKeys, this.currentData[this.result][this.year])
+      const data = transformDataForChartRender(this.selectedKeys, this.currentData[this.result][this.year])
       const keys = this.getKeysInOrder(this.keys, this.selectedKeys)
-      const keyColours = keys.map(key => this.legendColour[key])
+      const keyColours = keys.map(key => this.allSelected ? TOTAL_COLOUR : this.legendColour[key])
       const stack = d3.stack()
 
       stack.keys(keys)
@@ -368,32 +372,37 @@ export default {
             this.legend[key] = d.data[key]
           })
 
-          d3.selectAll('.fill-bar')
-            .style('opacity', 0.5)
-          d3.selectAll('.area')
-            .style('opacity', 0)
-          d3.selectAll('.stage-total-texts')
-            .style('opacity', 0)
-          d3.selectAll(`.${d.key}`)
-            .style('opacity', 1)
-          d3.selectAll(`.${d.key}-cat-text`)
-            .style('display', 'block')
-          d3.selectAll(`.${d.key}-area`)
-            .style('opacity', 0.5)
-
+          if (!this.allSelected) {
+            d3.selectAll('.fill-bar')
+              .style('opacity', 0.5)
+            d3.selectAll('.area')
+              .style('opacity', 0)
+            d3.selectAll('.stage-total-texts')
+              .style('opacity', 0)
+            d3.selectAll(`.${d.key}`)
+              .style('opacity', 1)
+            d3.selectAll(`.${d.key}-cat-text`)
+              .style('display', 'block')
+            d3.selectAll(`.${d.key}-area`)
+              .style('opacity', 0.5)
+          }
           this.showLegend = true
         })
         .on('mouseout', (d) => {
-          d3.selectAll('.fill-bar')
-            .style('opacity', 1)
-          d3.selectAll(`.cat-text`)
-            .style('display', 'none')
-          d3.selectAll(`.${d.key}-cat-text`)
-            .style('display', 'none')
-          d3.selectAll('.area')
-            .style('opacity', 0.3)
-          d3.selectAll('.stage-total-texts')
-            .style('opacity', 1)
+
+          if (!this.allSelected) {
+            d3.selectAll('.fill-bar')
+              .style('opacity', 1)
+            d3.selectAll(`.cat-text`)
+              .style('display', 'none')
+            d3.selectAll(`.${d.key}-cat-text`)
+              .style('display', 'none')
+            d3.selectAll('.area')
+              .style('opacity', 0.3)
+            d3.selectAll('.stage-total-texts')
+              .style('opacity', 1)
+          }
+          
           this.showLegend = false
         })
         .merge(rects)
@@ -524,13 +533,20 @@ export default {
   tbody > tr > td {
     background: transparent;
     color: #000;
-    line-height: 1.8rem;
+    // line-height: 1.8;
   }
 }
 
 .check-box {
   width: 15px;
   height: 15px;
+
+  &.grouped-population-checkbox {
+    label::after {
+      border-left: 1px solid #000;
+      border-bottom: 1px solid #000;
+    }
+  }
   
   span.legend-colour {
     position: absolute;
