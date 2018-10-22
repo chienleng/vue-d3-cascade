@@ -4,8 +4,10 @@
       <router-link to="/cascade-stacked-3">Cascade Stacked 2</router-link> |
       <router-link to="/cascade-stacked-1">Cascade Stacked</router-link> |
       <router-link to="/cascade-stacked-2">Cascade Stacked Comparisons</router-link> |
-      <router-link to="/multibar">Multi Bar w/ Cascade Stacked</router-link>
+      <router-link to="/multibar">Multi Bar w/ Cascade Stacked</router-link> |
+      <router-link to="/multibar2">Multi Bar 2 w/ Cascade Stacked</router-link>
     </div>
+    
     <router-view/>
   </div>
 </template>
@@ -20,6 +22,9 @@
 #nav {
   padding: 30px;
   text-align: center;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 2rem;
+
   a {
     font-weight: bold;
     color: #2c3e50;
