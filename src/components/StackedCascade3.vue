@@ -1,31 +1,13 @@
 <template>
   <div class="stacked-cascade">
-    <div class="selections">
-      <label v-if="resultsOptions.length > 1">
-        <select class="select" v-model="result">
-          <option v-for="option in resultsOptions" :key="option" :value="option">
-            {{ option }}
-          </option>
-        </select>
-      </label>
-      
-      <label>
-        Year
-        <select class="select" v-model="year">
-          <option v-for="option in yearOptions" :key="option" :value="option">
-            {{ option }}
-          </option>
-        </select>
-      </label>
-    </div>
 
     <table class="legend-table table is-narrow" v-if="legendDisplay">
       <thead>
         <tr>
           <th>
             <div class="check-box grouped-population-checkbox">
-              <input type="checkbox" id="grouped-population-checkbox" v-model="groupPopulations">
-              <label for="grouped-population-checkbox">
+              <input type="checkbox" :id="`${id}-grouped-population-checkbox`" v-model="groupPopulations">
+              <label :for="`${id}-grouped-population-checkbox`">
                 <span 
                   class="legend-colour"
                 >
@@ -40,8 +22,8 @@
         <tr v-for="key in legendKeys" :key="key">
           <td>
             <div class="check-box">
-              <input type="checkbox" :id="key" :value="key" v-model="selectedKeys">
-              <label :for="key">
+              <input type="checkbox" :id="`${id}-${key}`" :value="key" v-model="selectedKeys">
+              <label :for="`${id}-${key}`">
                 <span 
                   class="legend-colour" 
                   :style="{ 'background-color': groupPopulations ? '#00267a' : legendColour[key] }">
@@ -58,7 +40,7 @@
 
 <script>
 import * as d3 from 'd3'
-import { transformDataForChartRender, transformCascadeData } from '@/modules/data-transform'
+import { transformDataForChartRender } from '@/modules/data-transform'
 import cascadeStep from '@/modules/cascade-step'
 
 const TOTAL = '_total'
@@ -69,6 +51,8 @@ export default {
 
   props: {
     cascadeData: Object,
+    year: Number,
+    scenario: String,
     h: Number,
     yAxisTitle: String,
     colourScheme: Array,
@@ -78,14 +62,11 @@ export default {
 
   data() {
     return {
+      id: null,
       keys: [],
       selectedKeys: [],
       groupPopulations: false,
       dict: {},
-      result: null,
-      resultsOptions: [],
-      year: null,
-      yearOptions: [],
       currentData: {},
       svgWidth: 0,
       svgHeight: this.h || 300,
@@ -122,16 +103,16 @@ export default {
     },
     selectedKeys() {
       if (this.year) {
-        this.update()
+        this.updateOptions(this.cascadeData)
       }
     },
     groupPopulations() {
       this.update()
     },
-    result() {
+    year() {
       this.update()
     },
-    year() {
+    scenario() {
       this.update()
     }
   },
@@ -149,6 +130,8 @@ export default {
   },
 
   mounted() {
+    this.id = this._uid
+
     window.addEventListener('resize', this.handleResize)
 
     this.setupWidthHeight()
@@ -209,14 +192,7 @@ export default {
       this.keys = updated.keys
       this.dict = updated.dict
 
-      this.resultsOptions = updated.results
-      this.result = updated.results[0]
-
-      this.yearOptions = updated.years
-      this.year = updated.years[0]
-
       this.currentData = updated.data
-
       this.update()
     },
 
@@ -285,7 +261,7 @@ export default {
     },
 
     update() {
-      const data = transformDataForChartRender(this.selectedKeys, this.currentData[this.result][this.year])
+      const data = transformDataForChartRender(this.selectedKeys, this.currentData[this.scenario][this.year])
       const keys = this.getKeysInOrder(this.keys, this.selectedKeys)
       const keyColours = keys.map(key => this.groupPopulations ? TOTAL_COLOUR : this.legendColour[key])
       const stack = d3.stack()
@@ -506,8 +482,7 @@ export default {
 .legend-table {
   position: absolute;
   right: 2rem;
-  top: 6rem;
-  font-size: 11px;
+  top: 0;
   width: auto;
 }
 
@@ -515,10 +490,10 @@ export default {
   border: none;
 
   td, th {
-    padding: 3px 5px 2px;
+    padding: 3px 2px 2px;
     text-align: left;
     border: none;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: normal;
   }
 
@@ -596,16 +571,6 @@ export default {
   /* Unhide the checkmark on the checked state */
   input[type='checkbox']:checked + label::after {
       content: '';
-  }
-}
-
-.selections {
-  border-bottom: 1px solid #e4ecfc;
-  padding: 1rem;
-  margin-bottom: 1rem;
-
-  .select {
-    margin-right: 1rem;
   }
 }
 </style>

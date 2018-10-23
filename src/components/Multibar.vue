@@ -180,6 +180,7 @@ export default {
     },
 
     update(data) {
+      console.log(data)
       // axis and domain setup
       this.x0.domain(data.map(r => r.stage))
       this.x1.domain(this.keys).rangeRound([0, this.x0.bandwidth()])

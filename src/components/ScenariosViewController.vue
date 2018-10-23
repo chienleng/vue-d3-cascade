@@ -21,20 +21,33 @@
       </label>
     </div>
 
-    <div class="chart" style="max-width: 800px; margin: 0 auto;">
+    <div class="chart" style="max-width: 800px; margin: 2rem auto;">
       <stacked-cascade class="cascade"
-        :h="400"
+        :h="200"
         :yAxisTitle="'Number of people'"
         :cascadeData="cascadeData"
+        :year="year"
+        :scenario="result"
         :legendDisplay="true" />
     </div>
-    
+
+    <div class="chart" style="max-width: 800px; margin: 2rem auto;"
+      v-for="option in resultsOptions" :key="option">
+      <h4>{{option}}</h4>
+      <stacked-cascade class="cascade"
+        :h="200"
+        :yAxisTitle="'Number of people'"
+        :cascadeData="cascadeData"
+        :year="year"
+        :scenario="option"
+        :legendDisplay="true" />
+    </div>
   </div>
 </template>
 
 <script>
 import * as d3 from 'd3'
-import { transformDataForChartRender, transformCascadeData } from '@/modules/data-transform'
+import { transformCascadeData } from '@/modules/data-transform'
 import StackedCascade from './StackedCascade3.vue'
 
 export default {
@@ -75,5 +88,14 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped>  
+<style lang="scss" scoped>
+.selections {
+  border-bottom: 1px solid #e4ecfc;
+  padding: 1rem;
+  margin-bottom: 1rem;
+
+  .select {
+    margin-right: 1rem;
+  }
+}
 </style>
