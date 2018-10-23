@@ -202,6 +202,8 @@ export default {
             zero: this.getTotal(stage, zero),
           })
         })
+
+        console.log(this.multiData)
       })
 
     },
