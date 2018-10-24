@@ -1,15 +1,13 @@
 <template>
   <div class="multi-bar-view">
-    <h1>Multi Bar</h1>
-
     <div class="selections">
-      <label v-if="resultsOptions.length > 1">
+      <!-- <label v-if="resultsOptions.length > 1">
         <select class="select" v-model="result">
           <option v-for="option in resultsOptions" :key="option" :value="option">
             {{ option }}
           </option>
         </select>
-      </label>
+      </label> -->
       
       <label>
         Year
@@ -21,30 +19,30 @@
       </label>
     </div>
 
-    <div style="max-width: 800px; margin: 0 auto;">
-      <multibar class=""
-        :h="400"
-        :yAxisTitle="'Number of people'"
-        :multiData="multiData"
-        :colourScheme="colourScheme"
-        :keys="['Default budget', 'Doubled budget', 'Zero budget']"
-        :dict="{ 
-          'Default budget': 'Default budget',
-          'Doubled budget': 'Doubled budget',
-          'Zero budget': 'Zero budget',
-        }"
-      />
-    </div>
+    <div class="scenarios-vis">
 
-    <div class="chart" v-for="option in resultsOptions" :key="option">
-      <h4>{{option}}</h4>
-      <stacked-cascade class="cascade"
-        :h="200"
-        :yAxisTitle="'Number of people'"
-        :cascadeData="cascadeData"
-        :year="year"
-        :scenario="option"
-        :legendDisplay="true"></stacked-cascade>
+      <div class="multi-bar-vis">
+        <multibar
+          :h="300"
+          :yAxisTitle="'Number of people'"
+          :multiData="cascadeData"
+          :year="year"
+        />
+      </div>
+
+      <div class="stacked-cascade-vis">
+        <div class="chart" v-for="option in resultsOptions" :key="option">
+          <h4>{{option}}</h4>
+          <stacked-cascade class="cascade"
+            :h="180"
+            :yAxisTitle="'Number of people'"
+            :cascadeData="cascadeData"
+            :year="year"
+            :scenario="option"
+            :legendDisplay="true" />
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -52,7 +50,7 @@
 <script>
 import * as d3 from 'd3'
 import { transformCascadeData } from '@/modules/data-transform'
-import Multibar from './Multibar.vue'
+import Multibar from './Multibar2.vue'
 import StackedCascade from './StackedCascade3.vue'
 
 export default {
@@ -94,8 +92,6 @@ export default {
       this.year = transformed.years[0]
 
       this.cascadeData = transformed
-
-      console.log(this.cascadeData)
     }
   }
 }
@@ -110,8 +106,20 @@ export default {
     margin-right: 1rem;
   }
 }
-.chart {
-  max-width: 800px;
-  margin: 2rem auto;
+
+.scenarios-vis {
+
+  .multi-bar-vis {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .stacked-cascade-vis {
+    display: flex;
+    flex-wrap: wrap;
+
+    .chart {
+      width: 50%;
+    }
+  }
 }
 </style>

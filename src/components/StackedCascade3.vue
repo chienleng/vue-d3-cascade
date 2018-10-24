@@ -262,6 +262,7 @@ export default {
 
     update() {
       const data = transformDataForChartRender(this.selectedKeys, this.currentData[this.scenario][this.year])
+      
       const keys = this.getKeysInOrder(this.keys, this.selectedKeys)
       const keyColours = keys.map(key => this.groupPopulations ? TOTAL_COLOUR : this.legendColour[key])
       const stack = d3.stack()

@@ -9,7 +9,7 @@
               :style="{ 'background-color': legendColour[key] }">
             </span>
           </td>
-          <td>{{dict[key]}}</td>
+          <td>{{key}}</td>
           <td style="width: 50px; font-weight: bold; text-align: right;">
             <div v-if="showLegend">
               {{legend[key]}}
@@ -23,25 +23,30 @@
 
 <script>
 import * as d3 from 'd3'
+import { transformMultiData } from '@/modules/data-transform'
+
 
 export default {
   name: 'multi-bar',
 
   props: {
-    multiData: Array,
+    multiData: Object,
     h: Number,
-    keys: Array,
-    dict: Object,
     yAxisTitle: String,
     colourScheme: Array,
+    year: Number,
   },
 
   data() {
     return {
+      id: null,
+      currentData: {},
+      keys: [],
       svgWidth: 0,
       svgHeight: this.h || 300,
       width: 0,
       height: 0,
+      colours: d3.schemeSet1,
       margin: { left: 75, right: 40, top: 10, bottom: 20 },
       t: d3.transition().duration(0),
       svg: null,
@@ -66,26 +71,31 @@ export default {
 
   watch: {
     multiData(newData) {
-      this.update(newData)
+      this.updateOptions(newData)
     },
     keys(newData) {
       this.setupLegend(newData)
     },
-    colourScheme() {
-      this.redraw()
-    }
+    year() {
+      this.update()
+    },
   },
 
   created() {
     this.setupLegend(this.keys)
+
+    if (this.colourScheme && this.colourScheme.length > 0) {
+      this.colours = this.colourScheme
+    }
   },
 
   mounted() {
+    this.id = this._uid
     window.addEventListener('resize', this.handleResize)
 
     this.setupWidthHeight()
     this.setup()
-    this.update(this.multiData)
+    // this.update(this.multiData)
   },
 
   beforeDestroy: function () {
@@ -97,7 +107,7 @@ export default {
       // create the legend
       keys.forEach((key, i) => {
         this.legend[key] = 0
-        this.legendColour[key] = this.colourScheme[i]
+        this.legendColour[key] = this.colours[i]
       })
 
       this.legendKeys = keys.slice()
@@ -108,7 +118,15 @@ export default {
       this.svg.remove()
       this.setupWidthHeight()
       this.setup()
-      this.update(this.multiData)
+      this.update()
+    },
+
+    updateOptions(data) {
+      const updated = data
+      this.keys = updated.results
+
+      this.currentData = updated.data
+      this.update()
     },
 
     handleResize() {
@@ -132,7 +150,7 @@ export default {
 
       this.y = d3.scaleLinear()
       this.z = d3.scaleOrdinal()
-        .range(this.colourScheme)
+        .range(this.colours)
         
       this.xAxis = d3.axisBottom(this.x0)
       this.yAxis = d3.axisLeft(this.y)
@@ -178,12 +196,15 @@ export default {
         .style('text-anchor', 'middle')
     },
 
-    update(data) {
+    update() {
+      const data = transformMultiData(this.keys, this.multiData, this.year)
+
       // axis and domain setup
       this.x0.domain(data.map(r => r.stage))
       this.x1.domain(this.keys).rangeRound([0, this.x0.bandwidth()])
       // this.y.domain([0, d3.max(data, r => r.doubledTotal )]).range([this.height, 0]).nice()
 
+      //TODO: set to max of total
       this.y.domain([0, 4500]).range([this.height, 0])
       this.z.domain(this.keys)
       
@@ -201,7 +222,7 @@ export default {
       const multiBarsGroup = this.g.append("g")
         .attr('class', 'multi-bars')
         .selectAll(".multi-bars")
-        .data(this.multiData)
+        .data(data)
       
       const multiBars = multiBarsGroup.enter().append("g")
           .attr("transform", (d) => { 
