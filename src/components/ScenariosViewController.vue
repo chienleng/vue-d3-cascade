@@ -33,13 +33,15 @@
       <div class="stacked-cascade-vis">
         <div class="chart" v-for="option in resultsOptions" :key="option">
           <h4>{{option}}</h4>
-          <stacked-cascade class="cascade"
-            :h="180"
+          <stacked-cascade
+            :h="220"
             :yAxisTitle="'Number of people'"
             :cascadeData="cascadeData"
             :year="year"
             :scenario="option"
-            :legendDisplay="true" />
+            :legendDisplay="false"
+            :defaultTotal="true"
+            :totalColour="'#999'" />
         </div>
       </div>
 
@@ -118,7 +120,7 @@ export default {
     flex-wrap: wrap;
 
     .chart {
-      width: 50%;
+      width: 33%;
     }
   }
 }

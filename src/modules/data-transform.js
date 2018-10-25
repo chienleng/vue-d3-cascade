@@ -106,8 +106,11 @@ function transformMultiData(keys, cascadeData, year) {
 
     keys.forEach(key => {
       const total = getTotal(stage, scenarios[key])
+      
+      highest = total > highest ? total : highest
+
       multiData[index][key] = total
-      multiData[index].highest = total > highest ? total : highest
+      multiData[index].highest = highest
     })
   })
 

@@ -56,8 +56,10 @@ export default {
     h: Number,
     yAxisTitle: String,
     colourScheme: Array,
+    totalColour: String,
     legendDisplay: Boolean,
     marginObj: Object,
+    defaultTotal: Boolean
   },
 
   data() {
@@ -65,15 +67,16 @@ export default {
       id: null,
       keys: [],
       selectedKeys: [],
-      groupPopulations: false,
+      groupPopulations: this.defaultTotal || false,
       dict: {},
       currentData: {},
       svgWidth: 0,
       svgHeight: this.h || 300,
       colours: d3.schemeDark2,
+      tColour: this.totalColour || TOTAL_COLOUR,
       width: 0,
       height: 0,
-      margin: { left: 75, right: 40, top: 10, bottom: 20 },
+      margin: { left: 60, right: 20, top: 10, bottom: 20 },
       t: d3.transition().duration(0),
       svg: null,
       g: null,
@@ -150,7 +153,7 @@ export default {
         this.legendColour[key] = this.colours[i]
       })
 
-      this.legendColour[TOTAL] = TOTAL_COLOUR
+      this.legendColour[TOTAL] = this.tColour
 
       this.legendKeys = keys.slice()
       this.selectedKeys = keys.slice()
@@ -264,7 +267,7 @@ export default {
       const data = transformDataForChartRender(this.selectedKeys, this.currentData[this.scenario][this.year])
       
       const keys = this.getKeysInOrder(this.keys, this.selectedKeys)
-      const keyColours = keys.map(key => this.groupPopulations ? TOTAL_COLOUR : this.legendColour[key])
+      const keyColours = keys.map(key => this.groupPopulations ? this.tColour : this.legendColour[key])
       const stack = d3.stack()
 
       stack.keys(keys)
@@ -475,11 +478,13 @@ export default {
 .stacked-cascade {
   position: relative;
 }
+
 .legend-colour {
   display: block;
   width: 15px;
   height: 15px;
 }
+
 .legend-table {
   position: absolute;
   right: 2rem;

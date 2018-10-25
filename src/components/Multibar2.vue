@@ -25,7 +25,6 @@
 import * as d3 from 'd3'
 import { transformMultiData } from '@/modules/data-transform'
 
-
 export default {
   name: 'multi-bar',
 
@@ -95,7 +94,6 @@ export default {
 
     this.setupWidthHeight()
     this.setup()
-    // this.update(this.multiData)
   },
 
   beforeDestroy: function () {
@@ -202,10 +200,8 @@ export default {
       // axis and domain setup
       this.x0.domain(data.map(r => r.stage))
       this.x1.domain(this.keys).rangeRound([0, this.x0.bandwidth()])
-      // this.y.domain([0, d3.max(data, r => r.doubledTotal )]).range([this.height, 0]).nice()
+      this.y.domain([0, d3.max(data, r => r.highest )]).range([this.height, 0]).nice()
 
-      //TODO: set to max of total
-      this.y.domain([0, 4500]).range([this.height, 0])
       this.z.domain(this.keys)
       
       this.xAxisGroup
@@ -258,7 +254,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
 .stacked-cascade {
   position: relative;
 }
@@ -273,19 +269,37 @@ export default {
   border-radius: 2px;			
   pointer-events: none;			
 }
+
 .legend-colour {
   display: block;
   width: 15px;
   height: 15px;
 }
+
 .legend-table {
   position: absolute;
   right: 2rem;
-  top: 10px;
-  font-size: 11px;
+  top: 0;
+  width: auto;
 }
-.legend-table.table td {
-  padding: 3px 5px 2px;
+
+.legend-table.table {
+  border: none;
+
+  td, th {
+    padding: 3px 2px 2px;
+    text-align: left;
+    border: none;
+    font-size: 11px;
+    font-weight: normal;
+  }
+
+  thead > tr > th,
+  tbody > tr > td {
+    background: transparent;
+    color: #000;
+    line-height: 1;
+  }
 }
 </style>
 
