@@ -114,8 +114,6 @@ function transformMultiData(keys, cascadeData, year) {
     })
   })
 
-  console.log(multiData)
-
   return multiData
 }
 
