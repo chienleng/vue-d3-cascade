@@ -221,7 +221,7 @@ export default {
         .text(this.yAxisTitle)
 
       const area = d3.area()
-        .curve(cascadeStep)
+        .curve((d) => cascadeStep(d, this.x1.bandwidth()))
         .x0((d) => {
           return this.x0(d.stage) + this.x1(d.key); 
         })
@@ -284,13 +284,11 @@ export default {
           .attr('class', 'layer')
           .append('path')
             .attr('class', (d) => {
-              console.log(d)
               return `area ${this.getId(d.key)}-area`
             })
             .style('opacity', 0)
             .style('fill', (d) => this.z(d.key))
             .attr('d', (d) => {
-              console.log(d)
               return area(d.stages)
             })
       
@@ -315,24 +313,31 @@ export default {
           .attr("height", (d) => { return this.height - this.y(d.value); })
           .attr("fill", (d) => { return this.z(d.key); })
           .attr('fillOpacity', 0)
+          .attr('class', (d) => `rect ${this.getId(d.key)}-rect`)
         .on('mousedown', (d) => {
           this.$emit('click', d)
         })
         .on('mouseover', (d) => {
           this.$emit('mouseover', d)
-          console.log(d)
-          d3.selectAll(`.${this.getId(d.key)}-area`)
-              .style('opacity', 0.5)
+          const className = this.getId(d.key)
+          d3.selectAll('.rect')
+            .style('opacity', 0.1)
+          d3.selectAll(`.${className}-area`)
+            .style('opacity', 0.2)
+          d3.selectAll(`.${className}-rect`)
+            .style('opacity', 1)
         })
         .on('mouseout', (d) => {
           this.$emit('mouseout', d)
-          console.log(d)
-          d3.selectAll(`.${this.getId(d.key)}-area`)
-              .style('opacity', 0)
+          const className = this.getId(d.key)
+          d3.selectAll(`.${className}-area`)
+            .style('opacity', 0)
+          d3.selectAll('.rect')
+            .style('opacity', 1)
         })
         .merge(multiBars)
         .transition(this.t)
-          .attr('opacity', .05)
+          .attr('opacity', 1)
 
     }
   }
