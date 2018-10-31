@@ -39,6 +39,10 @@
 </template>
 
 <script>
+// import * as d3 from '../../../static/d3.v5.min.js' // CK: Warning, replace with import * as d3 from 'd3'
+// import { transformDataForChartRender } from './data-transform'
+// import cascadeStep from './cascade-step'
+
 import * as d3 from 'd3'
 import { transformDataForChartRender } from '@/modules/data-transform'
 import cascadeStep from '@/modules/cascade-step'

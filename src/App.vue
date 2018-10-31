@@ -5,7 +5,8 @@
       <router-link to="/cascade-stacked-1">Cascade Stacked</router-link> |
       <router-link to="/cascade-stacked-2">Cascade Stacked Comparisons</router-link> |
       <router-link to="/multibar">Multi Bar w/ Cascade Stacked</router-link> |
-      <router-link to="/multibar2">Multi Bar 2 w/ Cascade Stacked</router-link>
+      <router-link to="/multibar2">Multi Bar 2 w/ Cascade Stacked</router-link> |
+      <router-link to="/multibar3">Multi Bar 3 w/ Cascade Stacked</router-link>
     </div>
     
     <router-view/>

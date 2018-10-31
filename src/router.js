@@ -35,6 +35,11 @@ export default new Router({
       path: '/multibar2',
       name: 'multibar2',
       component: () => import(/* webpackChunkName: "multibar2" */ './views/MultiBarView2.vue')
+    },
+    {
+      path: '/multibar3',
+      name: 'multibar3',
+      component: () => import(/* webpackChunkName: "multibar3" */ './views/MultiBarView3.vue')
     }
   ]
 })

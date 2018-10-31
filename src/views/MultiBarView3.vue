@@ -1,16 +1,16 @@
 <template>
-  <div class="stacked-cascade-view">
-    <stacked-cascade-view-controller :cascadeData="chartData" />
+  <div class="multi-bar-view">
+    <scenarios-view-controller :scenariosData="chartData" />
   </div>
 </template>
 
 <script>
 import * as d3 from 'd3'
-import StackedCascadeViewController from '@/components/StackedCascadeViewController.vue'
+import ScenariosViewController from '@/components/ScenariosViewController2.vue'
 
 export default {
   components: {
-    StackedCascadeViewController,
+    ScenariosViewController,
   },
   data() {
     return {

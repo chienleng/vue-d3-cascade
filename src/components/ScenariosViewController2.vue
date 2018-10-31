@@ -1,13 +1,13 @@
 <template>
-  <div class="stacked-cascade-view">
+  <div class="multi-bar-view">
     <div class="selections">
-      <label v-if="resultsOptions.length > 1">
+      <!-- <label v-if="resultsOptions.length > 1">
         <select class="select" v-model="result">
           <option v-for="option in resultsOptions" :key="option" :value="option">
             {{ option }}
           </option>
         </select>
-      </label>
+      </label> -->
       
       <label>
         Year
@@ -19,33 +19,49 @@
       </label>
     </div>
 
-    <div class="chart">
-      <stacked-cascade class="cascade"
-        :h="300"
-        :yAxisTitle="'Number of people'"
-        :cascadeData="updatedData"
-        :year="year"
-        :scenario="result"
-        :colourScheme="colours"
-        :legendDisplay="true" />
+    <div class="scenarios-vis">
+
+      <div class="multi-bar-vis">
+        <multibar
+          :h="300"
+          :yAxisTitle="'Number of people'"
+          :multiData="cascadeData"
+          :year="year"
+        />
+      </div>
+
+      <!-- <div class="stacked-cascade-vis">
+        <div class="chart" v-for="option in resultsOptions" :key="option">
+          <h4>{{option}}</h4>
+          <stacked-cascade
+            :h="220"
+            :yAxisTitle="'Number of people'"
+            :cascadeData="cascadeData"
+            :year="year"
+            :scenario="option"
+            :legendDisplay="false"
+            :defaultTotal="true"
+            :totalColour="'#999'" />
+        </div>
+      </div> -->
+
     </div>
   </div>
 </template>
 
 <script>
-// import { transformCascadeData } from './data-transform'
-// import StackedCascade from './StackedCascade.vue'
-
+import * as d3 from 'd3'
 import { transformCascadeData } from '@/modules/data-transform'
+import Multibar from './Multibar2.vue'
 import StackedCascade from './StackedCascade3.vue'
 
 export default {
   components: {
+    Multibar,
     StackedCascade,
   },
   props: {
-    cascadeData: Object,
-    colourScheme: Array
+    scenariosData: Object,
   },
   data() {
     return {
@@ -53,14 +69,13 @@ export default {
       resultsOptions: [],
       year: null,
       yearOptions: [],
-      updatedData: {},
-      colours: this.colourScheme || null
+      cascadeData: {},
+      colorScheme: d3.schemeDark2
     }
   },
-  computed: {
-  },
+  computed: {},
   watch: {
-    cascadeData(newData) {
+    scenariosData(newData) {
       if (newData) {
         this.updateCascadeData(newData)
       }
@@ -78,7 +93,7 @@ export default {
       this.yearOptions = transformed.years
       this.year = transformed.years[0]
 
-      this.updatedData = transformed
+      this.cascadeData = transformed
     }
   }
 }
@@ -93,8 +108,20 @@ export default {
     margin-right: 1rem;
   }
 }
-.chart {
-  max-width: 1200px;
-  margin: 1rem auto;
+
+.scenarios-vis {
+
+  .multi-bar-vis {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .stacked-cascade-vis {
+    display: flex;
+    flex-wrap: wrap;
+
+    .chart {
+      width: 33%;
+    }
+  }
 }
 </style>
