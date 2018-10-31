@@ -21,6 +21,7 @@ CascadeStep.prototype = {
       this._context.lineTo(this._x, this._y);
     }
     if (this._line || (this._line !== 0 && this._point === 1)) {
+      this._context.lineTo(this._x, this._y);
       this._context.closePath();
     }
     if (this._line >= 0) {
@@ -46,6 +47,7 @@ CascadeStep.prototype = {
         } else {
           var x1 = this._x * (1 - this._t) + x * this._t;
           var x2 = (this._x + x) / 2;
+          console.log(this)
           this._context.lineTo(x2, this._y);
           this._context.lineTo(x1, y);
         }

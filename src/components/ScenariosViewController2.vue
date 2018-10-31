@@ -52,7 +52,7 @@
 <script>
 import * as d3 from 'd3'
 import { transformCascadeData } from '@/modules/data-transform'
-import Multibar from './Multibar2.vue'
+import Multibar from './Multibar3.vue'
 import StackedCascade from './StackedCascade3.vue'
 
 export default {

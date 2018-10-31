@@ -291,7 +291,7 @@ export default {
 
       const area = d3.area()
         .curve(cascadeStep)
-        .x0((d) => { return this.x(d.data.stage); })
+        .x0((d) => { console.log(d); return this.x(d.data.stage); })
         .y0((d) => this.y(d[0]))
         .y1((d) => this.y(d[1]))
 
