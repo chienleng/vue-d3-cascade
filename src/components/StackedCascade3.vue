@@ -291,7 +291,7 @@ export default {
 
       const area = d3.area()
         .curve((d) => cascadeStep(d, this.x.bandwidth()))
-        .x0((d) => { console.log(d); return this.x(d.data.stage); })
+        .x0((d) => { return this.x(d.data.stage); })
         .y0((d) => this.y(d[0]))
         .y1((d) => this.y(d[1]))
 
@@ -347,14 +347,14 @@ export default {
           })
 
           if (!this.groupPopulations) {
-            d3.selectAll('.fill-bar')
-              .style('opacity', 0.5)
+            // d3.selectAll('.fill-bar')
+            //   .style('opacity', 0.5)
             d3.selectAll('.area')
               .style('opacity', 0)
             d3.selectAll('.stage-total-texts')
               .style('opacity', 0)
-            d3.selectAll(`.${d.key}`)
-              .style('opacity', 1)
+            d3.selectAll(`.fill-bar:not(.${d.key})`)
+              .style('opacity', 0.5)
             d3.selectAll(`.${d.key}-cat-text`)
               .style('display', 'block')
             d3.selectAll(`.${d.key}-area`)

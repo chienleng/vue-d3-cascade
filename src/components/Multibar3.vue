@@ -47,7 +47,7 @@ export default {
       width: 0,
       height: 0,
       colours: d3.schemeSet1,
-      margin: { left: 75, right: 40, top: 10, bottom: 20 },
+      margin: { left: 75, right: 200, top: 10, bottom: 20 },
       t: d3.transition().duration(0),
       svg: null,
       g: null,
@@ -289,18 +289,17 @@ export default {
           this.$emit('mouseover', d)
 
           const className = this.getId(d.key)
-          d3.selectAll('.rect')
-            .style('opacity', 0.1)
           d3.selectAll(`.${className}-area`).transition()
             .style('opacity', 0.2)
-          d3.selectAll(`.${className}-rect`)
-            .style('opacity', 1)
+          d3.selectAll(`.multi-bars rect:not(.${className}-rect)`).transition()
+            .style('opacity', .1)
         })
         .on('mouseout', d => {
           this.$emit('mouseout', d)
-          d3.selectAll('.area').transition().duration(100)
+          const className = this.getId(d.key)
+          d3.selectAll(`.${className}-area`).transition()
             .style('opacity', 0)
-          d3.selectAll('.rect')
+          d3.selectAll('.rect').transition()
             .style('opacity', 1)
         })
         .merge(multiBars)
@@ -325,7 +324,7 @@ export default {
 
 .legend-table {
   position: absolute;
-  right: 2rem;
+  right: 0;
   top: 0;
   width: auto;
 }

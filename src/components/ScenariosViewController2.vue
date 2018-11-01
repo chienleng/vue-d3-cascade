@@ -112,8 +112,8 @@ export default {
 .scenarios-vis {
 
   .multi-bar-vis {
-    max-width: 800px;
-    margin: 0 auto;
+    // max-width: 800px;
+    // margin: 0 auto;
   }
   .stacked-cascade-vis {
     display: flex;
