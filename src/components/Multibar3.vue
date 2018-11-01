@@ -1,5 +1,5 @@
 <template>
-  <div class="stacked-cascade">
+  <div class="multi-bar-cascade">
     <table class="legend-table table is-narrow">
       <tbody>
         <tr v-for="key in legendKeys" :key="key">
@@ -27,7 +27,7 @@ import { transformMultiData } from '@/modules/data-transform'
 import cascadeStep from '@/modules/cascade-step'
 
 export default {
-  name: 'multi-bar',
+  name: 'multi-bar-cascade',
 
   props: {
     multiData: Object,
@@ -159,9 +159,9 @@ export default {
       this.yAxis = d3.axisLeft(this.y)
         .tickFormat(d => {
           if (d < 1000 && d > 99) {
-            return `${d/1000}k`;
+            return `${d/1000}k`
           } else {
-            return d3.format('~s')(d);
+            return d3.format('~s')(d)
           }
         })
 
@@ -201,9 +201,6 @@ export default {
 
     update() {
       const data = transformMultiData(this.keys, this.multiData, this.year)
-      const stack = d3.stack()
-
-      stack.keys(this.keys)
 
       // axis and domain setup
       this.x0.domain(data.map(r => r.stage))
@@ -220,117 +217,88 @@ export default {
       this.yAxisLabel
         .text(this.yAxisTitle)
 
+      // Setup area curve and drawing data
       const area = d3.area()
-        .curve((d) => cascadeStep(d, this.x1.bandwidth()))
-        .x0((d) => {
-          return this.x0(d.stage) + this.x1(d.key); 
-        })
-        .x1((d) => {
-          console.log(this.x0(d.stage) + this.x1(d.key))
-          return this.x0(d.stage) + this.x1(d.key);
-        })
-        .y0((d) => this.y(0))
-        .y1((d) => this.y(d.value))
+        .curve(d => cascadeStep(d, this.x1.bandwidth()))
+        .x0(d => this.x0(d.stage) + this.x1(d.key))
+        .y0(d => this.y(0))
+        .y1(d => this.y(d.value))
       
-      // Remove 
+      // Remove existing vis for redraw
       this.g.select('.multi-bars').remove()
       this.g.select('.multi-areas').remove()
 
-      // DATA JOIN
-      const newD = this.keys.map(function(key) {
-        const returned = { key }
-        returned.stages = []
-        
-        data.forEach(d => {
-          returned.stages.push({
-            key,
-            stage: d.stage,
-            value: d[key]
-          })
-        })
-
-        return returned
-      })
-      const newD2 = []
-      data.forEach(d => {
-        this.keys.forEach((key) => {
-          const returned = { key }
-          
-          returned.stage = d.stage
-          returned.value = d[key]
-
-          newD2.push(returned)
-        }) 
-      })
-
-      console.log(newD, newD2)
-
-      const multiAreasGroup = this.g.append('g')
-        .attr('class', 'multi-areas')
-        // .selectAll(".multi-areas")
-        // .data(data)
-      
+      // Cascade Area
+      const multiAreasGroup = this.g.append('g').attr('class', 'multi-areas')
       const multiAreas = multiAreasGroup
-        // .enter().append("g")
-        //   .attr("transform", (d) => { 
-        //     return "translate(" + this.x0(d.stage) + ",0)"; 
-        //   })
         .selectAll('.layer')
-        .data(newD)
+        .data(() => this.keys.map(function(key) {
+            const areaData = { key }
+            areaData.stages = []
+            
+            data.forEach(d => {
+              areaData.stages.push({
+                key,
+                stage: d.stage,
+                value: d[key]
+              })
+            })
+
+            return areaData
+          })
+        )
       
       multiAreas
         .enter()
           .append('g')
           .attr('class', 'layer')
           .append('path')
-            .attr('class', (d) => {
-              return `area ${this.getId(d.key)}-area`
-            })
+            .attr('class', d => `area ${this.getId(d.key)}-area`)
             .style('opacity', 0)
-            .style('fill', (d) => this.z(d.key))
-            .attr('d', (d) => {
-              return area(d.stages)
-            })
+            .style('fill', d => this.z(d.key))
+            .attr('d', d => area(d.stages))
       
+      // Bars
       const multiBarsGroup = this.g.append("g")
         .attr('class', 'multi-bars')
-        .selectAll(".multi-bars")
+        .selectAll('.multi-bars')
         .data(data)
 
-      const multiBars = multiBarsGroup.enter().append("g")
-          .attr("transform", (d) => { 
-            return "translate(" + this.x0(d.stage) + ",0)"; 
-          })
-        .selectAll("rect")
-        .data((d) => { 
-          return this.keys.map((key) => { return {key: key, value: d[key]}; });
-        })
+      const multiBars = multiBarsGroup.enter().append('g')
+        .attr('transform', d => 'translate(' + this.x0(d.stage) + ',0)')
+        .selectAll('rect')
+        .data(d => this.keys.map((key) => {
+          return {
+            key: key,
+            value: d[key]
+          }
+        }))
       
-      multiBars.enter().append("rect")
-          .attr("x", (d) => { return this.x1(d.key); })
-          .attr("y", (d) => { return this.y(d.value); })
-          .attr("width", this.x1.bandwidth())
-          .attr("height", (d) => { return this.height - this.y(d.value); })
-          .attr("fill", (d) => { return this.z(d.key); })
-          .attr('fillOpacity', 0)
-          .attr('class', (d) => `rect ${this.getId(d.key)}-rect`)
-        .on('mousedown', (d) => {
-          this.$emit('click', d)
-        })
-        .on('mouseover', (d) => {
+      multiBars.enter().append('rect')
+        .attr('x', d => this.x1(d.key))
+        .attr('y', d => this.y(d.value))
+        .attr('width', this.x1.bandwidth())
+        .attr('height', d => this.height - this.y(d.value))
+        .attr('fill', d => this.z(d.key))
+        .attr('fillOpacity', 0)
+        .attr('class', d => `rect ${this.getId(d.key)}-rect`)
+        // .on('mousedown', d => {
+        //   this.$emit('click', d)
+        // })
+        .on('mouseover', d => {
           this.$emit('mouseover', d)
+
           const className = this.getId(d.key)
           d3.selectAll('.rect')
             .style('opacity', 0.1)
-          d3.selectAll(`.${className}-area`)
+          d3.selectAll(`.${className}-area`).transition()
             .style('opacity', 0.2)
           d3.selectAll(`.${className}-rect`)
             .style('opacity', 1)
         })
-        .on('mouseout', (d) => {
+        .on('mouseout', d => {
           this.$emit('mouseout', d)
-          const className = this.getId(d.key)
-          d3.selectAll(`.${className}-area`)
+          d3.selectAll('.area').transition().duration(100)
             .style('opacity', 0)
           d3.selectAll('.rect')
             .style('opacity', 1)
@@ -345,19 +313,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.stacked-cascade {
+.multi-bar-cascade {
   position: relative;
-}
-.tooltip {	
-  position: absolute;			
-  width: 100px;					
-  height: 30px;					
-  padding: 2px 4px;				
-  font: 12px sans-serif;		
-  background: #fff;	
-  border: 1px solid #eee;		
-  border-radius: 2px;			
-  pointer-events: none;			
 }
 
 .legend-colour {
