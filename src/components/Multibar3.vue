@@ -10,11 +10,20 @@
             </span>
           </td>
           <td>{{key}}</td>
-          <td style="width: 50px; font-weight: bold; text-align: right;">
-            <div v-if="showLegend">
-              {{legend[key]}}
+        </tr>
+      </tbody>
+
+      <tbody>
+        <tr v-for="category in categories" :key="category">
+          <td>
+            <div class="check-box grouped-population-checkbox">
+              <input type="checkbox" :id="`${id}-${category}`" :value="category" v-model="selectedCategories">
+              <label :for="`${id}-${category}`">
+                <span class="legend-colour" ></span>
+              </label>
             </div>
           </td>
+          <td>{{ getLabel(category) }}</td>
         </tr>
       </tbody>
     </table>
@@ -42,6 +51,9 @@ export default {
       id: null,
       currentData: {},
       keys: [],
+      categories: [],
+      selectedCategories: [],
+      dict: {},
       svgWidth: 0,
       svgHeight: this.h || 300,
       width: 0,
@@ -63,9 +75,7 @@ export default {
       yAxisLabel: null,
       tooltip: null,
       legendKeys: [],
-      legend: {},
       legendColour: {},
-      showLegend: false,
     }
   },
 
@@ -76,13 +86,22 @@ export default {
     keys(newData) {
       this.setupLegend(newData)
     },
+    categories(newData) {
+      this.selectedCategories = newData.slice()
+    },
     year() {
       this.update()
+    },
+    selectedCategories() {
+      if (this.year) {
+        this.updateOptions(this.multiData)
+      }
     },
   },
 
   created() {
     this.setupLegend(this.keys)
+    this.selectedCategories = this.categories.slice()
 
     if (this.colourScheme && this.colourScheme.length > 0) {
       this.colours = this.colourScheme
@@ -105,7 +124,6 @@ export default {
     setupLegend(keys) {
       // create the legend
       keys.forEach((key, i) => {
-        this.legend[key] = 0
         this.legendColour[key] = this.colours[i]
       })
 
@@ -123,6 +141,8 @@ export default {
     updateOptions(data) {
       const updated = data
       this.keys = updated.results
+      this.categories = updated.keys
+      this.dict = updated.dict
 
       this.currentData = updated.data
       this.update()
@@ -140,6 +160,10 @@ export default {
 
     getId(string) {
       return string.toLowerCase().replace(/\s/g, '')
+    },
+
+    getLabel(category) {
+      return this.dict ? this.dict[category] : category
     },
  
     setup() {
@@ -200,7 +224,7 @@ export default {
     },
 
     update() {
-      const data = transformMultiData(this.keys, this.multiData, this.year)
+      const data = transformMultiData(this.keys, this.multiData, this.year, this.selectedCategories)
 
       // axis and domain setup
       this.x0.domain(data.map(r => r.stage))
@@ -290,7 +314,7 @@ export default {
 
           const className = this.getId(d.key)
           d3.selectAll(`.${className}-area`).transition()
-            .style('opacity', 0.2)
+            .style('opacity', 0.4)
           d3.selectAll(`.multi-bars rect:not(.${className}-rect)`).transition()
             .style('opacity', .1)
         })
@@ -326,7 +350,7 @@ export default {
   position: absolute;
   right: 0;
   top: 0;
-  width: auto;
+  width: 160px;
 }
 
 .legend-table.table {
@@ -345,6 +369,75 @@ export default {
     background: transparent;
     color: #000;
     line-height: 1;
+  }
+}
+
+.check-box {
+  width: 15px;
+  height: 15px;
+  position: relative;
+
+  &.grouped-population-checkbox {
+    label::before {
+      border: 1px solid #000;
+      width: 15px;
+      height: 15px;
+    }
+    
+    label::after {
+      border-left: 1px solid #000;
+      border-bottom: 1px solid #000;
+    }
+  }
+  
+  span.legend-colour {
+    position: absolute;
+    top: 0;
+  }
+
+  label {
+    display: inline;
+    max-width: none;
+    font-weight: normal;
+
+    &::before {
+      position: absolute;
+      
+      content: '';
+      display: inline-block;   
+    }
+
+    &::after {
+      position: absolute;
+      left: 3px;
+      top: 4px;
+
+      content: '';
+      display: inline-block;
+      height: 4px;
+      width: 9px;
+      border-left: 1px solid #999;
+      border-bottom: 1px solid #999;
+      
+      transform: rotate(-50deg);
+    }
+  }
+
+  input[type='checkbox'] {
+    display: none;
+  }
+
+  input[type='checkbox']:focus + label::before {
+    outline: rgb(59, 153, 252) auto 5px;
+  }
+
+  /* Hide the checkmark by default */
+  input[type='checkbox'] + label::after {
+      content: none;
+  }
+  /* Unhide the checkmark on the checked state */
+  input[type='checkbox']:checked + label::after {
+      content: '';
   }
 }
 </style>
