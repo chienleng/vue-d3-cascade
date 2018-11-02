@@ -1,5 +1,14 @@
 <template>
   <div class="multi-bar-cascade">
+    <!-- Arrow def -->
+    <svg width="0" height="0">
+      <defs>
+        <marker id="arrow" markerWidth="7" markerHeight="5" refX="0" refY="2.5" orient="auto">
+        <polygon points="0 0, 7 2.5, 0 5" />
+    </marker>
+      </defs>
+    </svg>
+
     <table class="legend-table table is-narrow">
       <tbody>
         <tr v-for="key in legendKeys" :key="key">
@@ -251,6 +260,7 @@ export default {
       // Remove existing vis for redraw
       this.g.select('.multi-bars').remove()
       this.g.select('.multi-areas').remove()
+      this.g.select('.multi-bar-text').remove()
 
       // Cascade Area
       const multiAreasGroup = this.g.append('g').attr('class', 'multi-areas')
@@ -283,7 +293,7 @@ export default {
             .attr('d', d => area(d.stages))
       
       // Bars
-      const multiBarsGroup = this.g.append("g")
+      const multiBarsGroup = this.g.append('g')
         .attr('class', 'multi-bars')
         .selectAll('.multi-bars')
         .data(data)
@@ -317,18 +327,107 @@ export default {
             .style('opacity', 0.4)
           d3.selectAll(`.multi-bars rect:not(.${className}-rect)`).transition()
             .style('opacity', .1)
+          d3.selectAll(`.${className}-cat-text`)
+            .style('display', 'block')
+
         })
         .on('mouseout', d => {
           this.$emit('mouseout', d)
+
           const className = this.getId(d.key)
           d3.selectAll(`.${className}-area`).transition()
             .style('opacity', 0)
           d3.selectAll('.rect').transition()
             .style('opacity', 1)
+          d3.selectAll(`.${className}-cat-text`)
+            .style('display', 'none')
+
         })
         .merge(multiBars)
         .transition(this.t)
           .attr('opacity', 1)
+      
+      // Text
+      const lastDataIndex = data.length - 1
+      const multiBarTexts = this.g.append('g')
+        .attr('class', 'multi-bar-text')
+        .selectAll('.multi-bar-text')
+        .data(() => this.keys.map(function(key) {
+            const areaData = { key }
+            areaData.stages = []
+            
+            data.forEach(d => {
+              areaData.stages.push({
+                key,
+                stage: d.stage,
+                value: d[key]
+              })
+            })
+
+            return areaData
+          })
+        )
+
+      const categoryText = multiBarTexts.enter().append('g')
+        .attr('class', (d) => `cat-text ${this.getId(d.key)}-cat-text`)
+        .style('display', 'none')
+        .selectAll('text')
+        .data((d) => {
+          const lastIndex = d.stages.length - 1
+          const firstStageValue = d.stages[0].value
+          console.log(d)
+          // add key
+          d.stages.forEach((k, j) => {
+            console.log(k)
+
+            k.percent = k.value / firstStageValue * 100
+
+            if (j === lastIndex) {
+              // k.loss = 0
+              k.conversion = 0
+            } else {
+              // k.loss = d[j].data[d.key] - d[j+1].data[d.key]
+              k.conversion = d.stages[j+1].value / d.stages[j].value * 100
+            }
+          })
+          return d.stages
+        })
+      
+      categoryText.enter().append('text')
+        .attr('x', (d) => this.x1(d.key) + this.x0(d.stage) + 2)
+        .attr('y', (d) => this.y(d.value) - 2)
+        .style('font-size', '12px')
+        .style('font-weight', 'bold')
+        .style('fill', '#00267a')
+        .text(d => `${d3.format(',.0f')(d.percent)}%`)
+
+      categoryText.enter()
+        .append('line')
+        .style('stroke', '#00267a')
+        .style('stroke-width', 2)
+        .style('stroke-dasharray', '10,3')
+        .style('marker-end','url(#arrow)')
+        .style('display', (d, i) => lastDataIndex === i ? 'none' : 'block')
+        .attr('x1', (d) => {
+          return this.x1(d.key) + this.x0(d.stage) + this.x0.bandwidth() /2
+        })
+        .attr('x2', (d) => {
+          return this.x1(d.key) + this.x0(d.stage) + this.x0.bandwidth()
+        })
+        .attr('y1', () => this.y(0) - 9)
+        .attr('y2', () => this.y(0) - 9)
+      
+      categoryText.enter()
+        .append('text')
+        .attr('x', (d) => {
+          return this.x1(d.key) + this.x0(d.stage) + this.x0.bandwidth() -10
+        })
+        .attr('y', () => this.y(0) - 15)
+        .attr('text-anchor', 'end')
+        .style('font-size', '11px')
+        .style('font-weight', 'bold')
+        .style('fill', '#00267a')
+        .text((d, i) => { return lastDataIndex === i ? '' : `${d3.format('.1f')(d.conversion)}%` })
 
     }
   }
@@ -440,5 +539,6 @@ export default {
       content: '';
   }
 }
+
 </style>
 
