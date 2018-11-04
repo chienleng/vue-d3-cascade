@@ -9,8 +9,14 @@
       </defs>
     </svg>
 
+    
+
     <table class="legend-table table is-narrow">
-      <tbody>
+      <tbody class="scenarios">
+        <tr>
+          <td></td>
+          <td>Scenarios</td>                      
+        </tr>
         <tr v-for="key in legendKeys" :key="key">
           <td>
             <span 
@@ -22,7 +28,11 @@
         </tr>
       </tbody>
 
-      <tbody>
+      <tbody class="subpopulation">
+        <tr>
+          <td></td>
+          <td>Subpopulation</td>                      
+        </tr>
         <tr v-for="category in categories" :key="category">
           <td>
             <div class="check-box grouped-population-checkbox">
@@ -40,6 +50,10 @@
 </template>
 
 <script>
+// import * as d3 from '../../../../static/d3.v5.min.js' // CK: Warning, replace with import * as d3 from 'd3'
+// import cascadeStep from '../cascade-step'
+// import { transformMultiData } from '../data-transform'
+
 import * as d3 from 'd3'
 import { transformMultiData } from '@/modules/data-transform'
 import cascadeStep from '@/modules/cascade-step'
@@ -68,7 +82,7 @@ export default {
       width: 0,
       height: 0,
       colours: d3.schemeSet1,
-      margin: { left: 75, right: 200, top: 10, bottom: 20 },
+      margin: { left: 75, right: 190, top: 10, bottom: 20 },
       t: d3.transition().duration(0),
       svg: null,
       g: null,
@@ -174,6 +188,23 @@ export default {
     getLabel(category) {
       return this.dict ? this.dict[category] : category
     },
+
+    areaData(data) {
+      return this.keys.map(function(key) {
+        const areaData = { key }
+        areaData.stages = []
+        
+        data.forEach(d => {
+          areaData.stages.push({
+            key,
+            stage: d.stage,
+            value: d[key]
+          })
+        })
+
+        return areaData
+      })
+    },
  
     setup() {
       this.x0 = d3.scaleBand()
@@ -254,7 +285,7 @@ export default {
       const area = d3.area()
         .curve(d => cascadeStep(d, this.x1.bandwidth()))
         .x0(d => this.x0(d.stage) + this.x1(d.key))
-        .y0(d => this.y(0))
+        .y0(() => this.y(0))
         .y1(d => this.y(d.value))
       
       // Remove existing vis for redraw
@@ -266,21 +297,7 @@ export default {
       const multiAreasGroup = this.g.append('g').attr('class', 'multi-areas')
       const multiAreas = multiAreasGroup
         .selectAll('.layer')
-        .data(() => this.keys.map(function(key) {
-            const areaData = { key }
-            areaData.stages = []
-            
-            data.forEach(d => {
-              areaData.stages.push({
-                key,
-                stage: d.stage,
-                value: d[key]
-              })
-            })
-
-            return areaData
-          })
-        )
+        .data(this.areaData(data))
       
       multiAreas
         .enter()
@@ -352,41 +369,22 @@ export default {
       const multiBarTexts = this.g.append('g')
         .attr('class', 'multi-bar-text')
         .selectAll('.multi-bar-text')
-        .data(() => this.keys.map(function(key) {
-            const areaData = { key }
-            areaData.stages = []
-            
-            data.forEach(d => {
-              areaData.stages.push({
-                key,
-                stage: d.stage,
-                value: d[key]
-              })
-            })
-
-            return areaData
-          })
-        )
+        .data(this.areaData(data))
 
       const categoryText = multiBarTexts.enter().append('g')
-        .attr('class', (d) => `cat-text ${this.getId(d.key)}-cat-text`)
+        .attr('class', d => `cat-text ${this.getId(d.key)}-cat-text`)
         .style('display', 'none')
         .selectAll('text')
         .data((d) => {
           const lastIndex = d.stages.length - 1
           const firstStageValue = d.stages[0].value
-          console.log(d)
           // add key
           d.stages.forEach((k, j) => {
-            console.log(k)
-
             k.percent = k.value / firstStageValue * 100
 
             if (j === lastIndex) {
-              // k.loss = 0
               k.conversion = 0
             } else {
-              // k.loss = d[j].data[d.key] - d[j+1].data[d.key]
               k.conversion = d.stages[j+1].value / d.stages[j].value * 100
             }
           })
@@ -408,20 +406,14 @@ export default {
         .style('stroke-dasharray', '10,3')
         .style('marker-end','url(#arrow)')
         .style('display', (d, i) => lastDataIndex === i ? 'none' : 'block')
-        .attr('x1', (d) => {
-          return this.x1(d.key) + this.x0(d.stage) + this.x0.bandwidth() /2
-        })
-        .attr('x2', (d) => {
-          return this.x1(d.key) + this.x0(d.stage) + this.x0.bandwidth()
-        })
+        .attr('x1', d => this.x1(d.key) + this.x0(d.stage) + this.x0.bandwidth() /2)
+        .attr('x2', d => this.x1(d.key) + this.x0(d.stage) + this.x0.bandwidth())
         .attr('y1', () => this.y(0) - 9)
         .attr('y2', () => this.y(0) - 9)
       
       categoryText.enter()
         .append('text')
-        .attr('x', (d) => {
-          return this.x1(d.key) + this.x0(d.stage) + this.x0.bandwidth() -10
-        })
+        .attr('x', d => this.x1(d.key) + this.x0(d.stage) + this.x0.bandwidth() -10)
         .attr('y', () => this.y(0) - 15)
         .attr('text-anchor', 'end')
         .style('font-size', '11px')
@@ -445,15 +437,13 @@ export default {
   height: 15px;
 }
 
-.legend-table {
+.legend-table.table {
+  border: none;
   position: absolute;
   right: 0;
   top: 0;
   width: 160px;
-}
-
-.legend-table.table {
-  border: none;
+  border-collapse: collapse;
 
   td, th {
     padding: 3px 2px 2px;
@@ -469,6 +459,21 @@ export default {
     color: #000;
     line-height: 1;
   }
+
+  > tbody + tbody {
+    border: none;
+  }
+
+  .scenarios tr:first-child td,
+  .subpopulation tr:first-child td {
+    padding-top: 15px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #ddd;
+    font-weight: bold;
+  }
+   .scenarios tr:first-child td {
+     padding-top: 0;
+   }
 }
 
 .check-box {

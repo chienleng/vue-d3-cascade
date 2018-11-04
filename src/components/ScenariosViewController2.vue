@@ -1,13 +1,6 @@
 <template>
   <div class="multi-bar-view">
     <div class="selections">
-      <!-- <label v-if="resultsOptions.length > 1">
-        <select class="select" v-model="result">
-          <option v-for="option in resultsOptions" :key="option" :value="option">
-            {{ option }}
-          </option>
-        </select>
-      </label> -->
       
       <label>
         Year
@@ -20,7 +13,6 @@
     </div>
 
     <div class="scenarios-vis">
-
       <div class="multi-bar-vis">
         <multibar
           :h="300"
@@ -30,38 +22,24 @@
         />
       </div>
 
-      <!-- <div class="stacked-cascade-vis">
-        <div class="chart" v-for="option in resultsOptions" :key="option">
-          <h4>{{option}}</h4>
-          <stacked-cascade
-            :h="220"
-            :yAxisTitle="'Number of people'"
-            :cascadeData="cascadeData"
-            :year="year"
-            :scenario="option"
-            :legendDisplay="false"
-            :defaultTotal="true"
-            :totalColour="'#999'" />
-        </div>
-      </div> -->
-
     </div>
   </div>
 </template>
 
 <script>
-import * as d3 from 'd3'
+// import { transformCascadeData } from '../data-transform'
+// import Multibar from './Multibar.vue'
+
 import { transformCascadeData } from '@/modules/data-transform'
 import Multibar from './Multibar3.vue'
-import StackedCascade from './StackedCascade3.vue'
 
 export default {
   components: {
     Multibar,
-    StackedCascade,
   },
   props: {
     scenariosData: Object,
+    colourScheme: Array
   },
   data() {
     return {
@@ -70,18 +48,18 @@ export default {
       year: null,
       yearOptions: [],
       cascadeData: {},
-      colorScheme: d3.schemeDark2
+      colorScheme: this.colourScheme || null
     }
   },
-  computed: {},
   watch: {
     scenariosData(newData) {
       if (newData) {
         this.updateCascadeData(newData)
       }
+    },
+    colourScheme(newData) {
+      this.colours = newData
     }
-  },
-  mounted() {
   },
   methods: {
     updateCascadeData(d) {
@@ -110,11 +88,6 @@ export default {
 }
 
 .scenarios-vis {
-
-  .multi-bar-vis {
-    // max-width: 800px;
-    // margin: 0 auto;
-  }
   .stacked-cascade-vis {
     display: flex;
     flex-wrap: wrap;

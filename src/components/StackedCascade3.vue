@@ -39,9 +39,9 @@
 </template>
 
 <script>
-// import * as d3 from '../../../static/d3.v5.min.js' // CK: Warning, replace with import * as d3 from 'd3'
-// import { transformDataForChartRender } from './data-transform'
-// import cascadeStep from './cascade-step'
+// import * as d3 from '../../../../static/d3.v5.min.js' // CK: Warning, replace with import * as d3 from 'd3'
+// import { transformDataForChartRender } from '../data-transform'
+// import cascadeStep from '../cascade-step'
 
 import * as d3 from 'd3'
 import { transformDataForChartRender } from '@/modules/data-transform'
@@ -76,11 +76,11 @@ export default {
       currentData: {},
       svgWidth: 0,
       svgHeight: this.h || 300,
-      colours: d3.schemeDark2,
+      colours: d3.schemeCategory10,
       tColour: this.totalColour || TOTAL_COLOUR,
       width: 0,
       height: 0,
-      margin: { left: 60, right: 20, top: 10, bottom: 20 },
+      margin: { left: 60, right: 190, top: 10, bottom: 20 },
       t: d3.transition().duration(0),
       svg: null,
       g: null,
@@ -120,6 +120,11 @@ export default {
       this.update()
     },
     scenario() {
+      this.update()
+    },
+    colourScheme(newData) {
+      this.colours = newData
+      this.setupLegend(this.keys)
       this.update()
     }
   },
@@ -347,8 +352,6 @@ export default {
           })
 
           if (!this.groupPopulations) {
-            // d3.selectAll('.fill-bar')
-            //   .style('opacity', 0.5)
             d3.selectAll('.area')
               .style('opacity', 0)
             d3.selectAll('.stage-total-texts')
@@ -489,15 +492,13 @@ export default {
   height: 15px;
 }
 
-.legend-table {
+.legend-table.table {
+  border: none;
   position: absolute;
   right: 2rem;
   top: 0;
-  width: auto;
-}
-
-.legend-table.table {
-  border: none;
+  width: 160px;
+  border-collapse: collapse;
 
   td, th {
     padding: 3px 2px 2px;
