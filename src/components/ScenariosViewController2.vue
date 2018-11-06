@@ -71,6 +71,11 @@ export default {
       this.yearOptions = transformed.years
       this.year = transformed.years[0]
 
+      // transformed.results = [transformed.results[0]]
+      // transformed.results = [transformed.results[0], transformed.results[1]]
+
+      console.log(transformed)
+
       this.cascadeData = transformed
     }
   }
