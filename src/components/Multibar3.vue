@@ -4,12 +4,10 @@
     <svg width="0" height="0">
       <defs>
         <marker id="arrow" markerWidth="7" markerHeight="5" refX="0" refY="2.5" orient="auto">
-        <polygon points="0 0, 7 2.5, 0 5" />
-    </marker>
+          <polygon points="0 0, 7 2.5, 0 5" />
+        </marker>
       </defs>
     </svg>
-
-    
 
     <table class="legend-table table is-narrow">
       <tbody class="scenarios">
