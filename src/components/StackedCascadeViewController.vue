@@ -38,6 +38,8 @@
       ></year-slider>
     </div>
 
+    <button @click="save">Save</button>
+
     <div class="chart">
       <stacked-cascade class="cascade"
         :h="300"
@@ -46,7 +48,9 @@
         :year="year"
         :scenario="result"
         :colourScheme="colours"
-        :legendDisplay="true" />
+        :legendDisplay="true"
+        @chartUpdated="chartUpdated"
+          />
     </div>
   </div>
 </template>
@@ -55,6 +59,7 @@
 // import { transformCascadeData } from './data-transform'
 // import StackedCascade from './StackedCascade.vue'
 import { transformCascadeData } from '@/modules/data-transform'
+import { getSVGString, svgString2Image } from '@/modules/svg-to-png'
 import StackedCascade from './StackedCascade3.vue'
 import YearSlider from './YearSlider.vue'
 
@@ -74,7 +79,10 @@ export default {
       year: null,
       yearOptions: [],
       updatedData: {},
-      colours: this.colourScheme || null
+      colours: this.colourScheme || null,
+      chartSvg: null,
+      chartWidth: 300,
+      chartHeight: 400,
     }
   },
   computed: {
@@ -104,6 +112,22 @@ export default {
     },
     yearChanged(year) {
       this.year = year
+    },
+
+    save() {
+      var svgString = getSVGString(this.chartSvg.node());
+      svgString2Image( svgString, 2*this.chartWidth, 2*this.chartHeight, 'png', save ); // passes Blob and filesize String to the callback
+
+      function save( dataBlob, filesize ){
+        saveAs( dataBlob, 'D3 vis exported to PNG.png' ); // FileSaver.js function
+      }
+    },
+
+    chartUpdated(chartSvg, width, height) {
+      console.log(chartSvg);
+      this.chartSvg = chartSvg
+      this.chartWidth = width
+      this.chartHeight = height
     },
   }
 }
