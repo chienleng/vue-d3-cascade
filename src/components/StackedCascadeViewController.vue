@@ -31,14 +31,23 @@
     <a id="setValue3" href="#">Reset</a>
     </div> -->
 
-    <div class="year-slider">
-      <year-slider
-        :years="yearOptions"
-        @yearChanged="yearChanged"
-      ></year-slider>
+    <div class="chart-options">
+
+      <div class="year-slider">
+        <year-slider
+          :years="yearOptions"
+          @yearChanged="yearChanged"
+        ></year-slider>
+      </div>
+
+      <export-graph
+        :chartSvg="chartSvg"
+        :chartWidth="chartWidth"
+        :chartHeight="chartHeight"
+      />
+
     </div>
 
-    <button @click="save">Save</button>
 
     <div class="chart">
       <stacked-cascade class="cascade"
@@ -59,14 +68,15 @@
 // import { transformCascadeData } from './data-transform'
 // import StackedCascade from './StackedCascade.vue'
 import { transformCascadeData } from '@/modules/data-transform'
-import { getSVGString, svgString2Image } from '@/modules/svg-to-png'
 import StackedCascade from './StackedCascade3.vue'
 import YearSlider from './YearSlider.vue'
+import ExportGraph from './ExportGraph.vue'
 
 export default {
   components: {
     StackedCascade,
     YearSlider,
+    ExportGraph,
   },
   props: {
     cascadeData: Object,
@@ -107,24 +117,12 @@ export default {
       this.year = this.yearOptions[0]
 
       this.updatedData = transformed
-
-      // this.drawSlider()
     },
     yearChanged(year) {
       this.year = year
     },
 
-    save() {
-      var svgString = getSVGString(this.chartSvg.node());
-      svgString2Image( svgString, 2*this.chartWidth, 2*this.chartHeight, 'png', save ); // passes Blob and filesize String to the callback
-
-      function save( dataBlob, filesize ){
-        saveAs( dataBlob, 'D3 vis exported to PNG.png' ); // FileSaver.js function
-      }
-    },
-
     chartUpdated(chartSvg, width, height) {
-      console.log(chartSvg);
       this.chartSvg = chartSvg
       this.chartWidth = width
       this.chartHeight = height
@@ -143,25 +141,45 @@ export default {
     margin-right: 1rem;
   }
 }
-.chart {
-  max-width: 1200px;
-  margin: 1rem auto;
-}
 
-.year-slider {
+.chart-options {
+  max-width: 1200px;
   width: 100%;
   margin: 0 auto;
 }
 
-@media only screen and (min-width: 800px) {
-  .year-slider {
-    width: 80%;
-  }
+.save-options {
+  vertical-align: bottom;
+  text-align: right;
+  width: 100%;
+  padding-bottom: 5px;
 }
 
-@media only screen and (min-width: 1200px) {
+.chart {
+  max-width: 1200px;
+  margin: 0 auto 20px;
+  padding: 20px;
+  border: 1px solid #dedede;
+  background: #fff;
+  border-radius: 3px;
+  box-shadow: 0 2px 3px rgba(0,0,0,.05);
+}
+
+.year-slider {
+  width: 100%;
+}
+
+@media only screen and (min-width: 800px) {
+  .chart-options {
+    display: flex;
+    width: 90%;
+  }
+  .save-options {
+    width: 20%;
+    padding-top: 30px;
+  }
   .year-slider {
-    width: 60%;
+    width: 80%;
   }
 }
 
