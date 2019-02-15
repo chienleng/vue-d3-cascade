@@ -41,6 +41,7 @@
       </div>
 
       <export-graph
+        :filename="filename"
         :chartSvg="chartSvg"
         :chartWidth="chartWidth"
         :chartHeight="chartHeight"
@@ -96,6 +97,9 @@ export default {
     }
   },
   computed: {
+    filename() {
+      return `cascade_plot_${this.year}`
+    },
   },
   watch: {
     cascadeData(newData) {
@@ -117,6 +121,8 @@ export default {
       this.year = this.yearOptions[0]
 
       this.updatedData = transformed
+
+      console.log(this.updatedData)
     },
     yearChanged(year) {
       this.year = year

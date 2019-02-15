@@ -1,0 +1,186 @@
+{
+  "programs": [
+    "Adherence",
+    "Screening - rural",
+    "Screening - urban",
+    "Treatment initiation",
+    "Confirmatory test"
+  ],
+  "results": [
+    "Default budget",
+    "Doubled budget",
+    "Zero budget"
+  ],
+  "spending": {
+    "Default budget": {
+      "Adherence": [
+        0,
+        0,
+        4000,
+        4000,
+        4000,
+        4000,
+        9000
+      ],
+      "Confirmatory test": [
+        0,
+        0,
+        1900,
+        1900,
+        1900,
+        1900,
+        1900
+      ],
+      "Screening - rural": [
+        0,
+        0,
+        32500,
+        32500,
+        32500,
+        32500,
+        32500
+      ],
+      "Screening - urban": [
+        0,
+        0,
+        21500,
+        21500,
+        21500,
+        21500,
+        21500
+      ],
+      "Treatment initiation": [
+        0,
+        0,
+        2500,
+        2500,
+        2500,
+        2500,
+        2500
+      ]
+    },
+    "Doubled budget": {
+      "Adherence": [
+        0,
+        0,
+        8000,
+        8000,
+        8000,
+        8000,
+        18000
+      ],
+      "Confirmatory test": [
+        0,
+        0,
+        3800,
+        3800,
+        3800,
+        3800,
+        3800
+      ],
+      "Screening - rural": [
+        0,
+        0,
+        65000,
+        65000,
+        65000,
+        65000,
+        65000
+      ],
+      "Screening - urban": [
+        0,
+        0,
+        43000,
+        43000,
+        43000,
+        43000,
+        43000
+      ],
+      "Treatment initiation": [
+        0,
+        0,
+        5000,
+        5000,
+        5000,
+        5000,
+        5000
+      ]
+    },
+    "Zero budget": {
+      "Adherence": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "Confirmatory test": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "Screening - rural": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "Screening - urban": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "Treatment initiation": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "t": {
+    "Default budget": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022
+    ],
+    "Doubled budget": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022
+    ],
+    "Zero budget": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022
+    ]
+  }
+}

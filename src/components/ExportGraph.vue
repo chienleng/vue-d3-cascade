@@ -12,6 +12,7 @@ export default {
   name: 'save-options',
 
   props: {
+    filename: String,
     chartSvg: Object,
     chartWidth: Number,
     chartHeight: Number
@@ -19,11 +20,17 @@ export default {
 
   methods: {
     save() {
+      const legend = this.chartSvg.node().querySelector('.legend')
+      legend.style.opacity = 1
+
       const svgString = getSVGString(this.chartSvg.node())
       svgString2Image( svgString, 2*this.chartWidth, 2*this.chartHeight, 'png', save )
 
+      const filename = this.filename
+
       function save (dataBlob, filesize) {
-        saveAs (dataBlob, 'Figures.png')
+        saveAs (dataBlob, `${filename}.png`)
+        legend.style.opacity = 0
       }
     },
   }
